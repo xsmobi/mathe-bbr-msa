@@ -1,38 +1,62 @@
-.App {
-  text-align: center;
+/* Text in Buttons lässt sich nicht zentrieren
+.buttons-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
 }
+*/
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
+/* bis 12.06.*/
+/*
+  @media (max-width: 768px) {
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+    .buttons-container {
+      grid-template-columns: repeat(auto-fill, 40px)
+    }
+ 
   }
-}
+ */
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+ .buttons-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
 }
 
-.App-link {
-  color: #61dafb;
+.button {
+  flex: 0 0 calc(18% - 20px); /* Adjust the width as needed */
+  margin: 2px; /* Adjust the margin as needed */
 }
+  
+  .types {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 1rem;
+  }
+  
+  .taskbuttons {
+    flex: 0 0 calc(33.33% - 1rem);
+    margin-bottom: 1rem;
+  }
+  
+  kbd {
+    background-color: #eee;
+    border-radius: 3px;
+    border: 1px solid #b4b4b4;
+    color: #333;
+    display: inline-block;
+    font-size: 0.85em;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 4px;
+    white-space: nowrap;
+  }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  em {
+    display: block;
+    text-align: center;
+    font-size: 24px;
+    font-style: normal;
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
