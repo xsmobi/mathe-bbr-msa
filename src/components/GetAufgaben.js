@@ -169,8 +169,6 @@ export default function FetchCSVData() {
                     {Array.from({ length: 10 }).map((_, index) => {
                         const imageKey = `Image${index + 1}`;
                         const captionKey = `Caption${index + 1}`;
-                        //console.log(imageKey)
-                        //console.log(selectedItem[imageKey])
                         // If there is an image, display it along with the caption
                         if (selectedItem[imageKey]) {
                             return (
@@ -180,7 +178,9 @@ export default function FetchCSVData() {
                                         alt={selectedItem[captionKey] || `Image ${index + 1}`}
                                         className="w-full h-auto mb-2 rounded"
                                     />
-                                    {selectedItem[captionKey] && <p className="text-base text-gray-700">{selectedItem[captionKey]}</p>}
+                                    {selectedItem[captionKey] && 
+                                    <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>
+                                    }
                                 </div>
                             );
                         }
@@ -197,34 +197,53 @@ export default function FetchCSVData() {
                         // If neither image nor caption exists, return null
                         return null;
                     })}
+                    {/* Render Links */}
+                    {Array.from({ length: 3 }).map((_, index) => {
+                        const linkKey = `Link${index + 1}`;
+                        const urlKey = `url${index + 1}`;
+
+                        if (selectedItem[linkKey] && selectedItem[urlKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <a
+                                        href={selectedItem[urlKey]}
+                                        target="_blank"
+                                        rel="nofollow noopener noreferrer"
+                                        className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
+                                    >
+                                        {selectedItem[linkKey]}
+                                    </a>
+                                </div>
+                            );
+                        }
+
+                        return null;
+                    })}
 
 
+{Array.from({ length: 1 }).map((_, index) => {
+    const videoKey = `Video${index + 1}`;
 
-
-
-
-{/* Render Links */}
-{Array.from({ length: 3 }).map((_, index) => {
-    const linkKey = `Link${index + 1}`;
-    const urlKey = `url${index + 1}`;
-
-    if (selectedItem[linkKey] && selectedItem[urlKey]) {
+    if (selectedItem[videoKey]) {
         return (
             <div key={index} className="mb-4">
-                <a
-                    href={selectedItem[urlKey]}
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
-                    className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
+                <video
+                    controls
+                    className="w-full rounded-md"
                 >
-                    {selectedItem[linkKey]}
-                </a>
+                    <source src={selectedItem[videoKey]} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
             </div>
         );
     }
 
     return null;
 })}
+
+
+
+
 
 
 
