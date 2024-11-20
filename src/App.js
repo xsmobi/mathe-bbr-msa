@@ -12,12 +12,12 @@ function App() {
   return (
     <div className={style.bg}>
       <div className={style.container}>
-      <header className="relative flex items-center justify-center h-20 bg-white shadow-md">
+      <header className="relative flex items-center justify-center h-20">
         <h1 className="text-3xl font-bold text-blue-500">
           Mathe BBR MSA
         </h1>
         <img
-          className="absolute bottom-2 right-2 h-12 w-12 rounded-md"
+          className="absolute top-0 right-2 h-12 w-12 rounded-md"
           src="https://mathbydoing.app/apple-touch-icon.png"
           alt="schlau.app Logo"
           loading="lazy"

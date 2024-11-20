@@ -138,7 +138,7 @@ export default function FetchCSVData() {
                                         setFilteredData(shuffledData);
                                     }}
                                 >
-                                    Aufgaben für BBR und MSA
+                                    Aufgaben für BBR und MSA <small>klick für neue Auswahl</small>
                                 </th>
                             </tr>
                         </thead>
@@ -171,6 +171,7 @@ export default function FetchCSVData() {
                         const captionKey = `Caption${index + 1}`;
                         //console.log(imageKey)
                         //console.log(selectedItem[imageKey])
+                        // If there is an image, display it along with the caption
                         if (selectedItem[imageKey]) {
                             return (
                                 <div key={index} className="mb-4">
@@ -179,12 +180,63 @@ export default function FetchCSVData() {
                                         alt={selectedItem[captionKey] || `Image ${index + 1}`}
                                         className="w-full h-auto mb-2 rounded"
                                     />
-                                    {selectedItem[captionKey] && <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>}
+                                    {selectedItem[captionKey] && <p className="text-base text-gray-700">{selectedItem[captionKey]}</p>}
                                 </div>
                             );
                         }
+                        // If there is no image but a caption, display the caption with larger font
+                        if (!selectedItem[imageKey] && selectedItem[captionKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <p className="text-lg font-semibold text-gray-900">
+                                        {selectedItem[captionKey]}
+                                    </p>
+                                </div>
+                            );
+                        }
+                        // If neither image nor caption exists, return null
                         return null;
                     })}
+
+
+
+
+
+
+{/* Render Links */}
+{Array.from({ length: 3 }).map((_, index) => {
+    const linkKey = `Link${index + 1}`;
+    const urlKey = `url${index + 1}`;
+
+    if (selectedItem[linkKey] && selectedItem[urlKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <a
+                    href={selectedItem[urlKey]}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
+                >
+                    {selectedItem[linkKey]}
+                </a>
+            </div>
+        );
+    }
+
+    return null;
+})}
+
+
+
+
+
+
+
+
+
+
+
+
                 </div>
             )}
         </div>
