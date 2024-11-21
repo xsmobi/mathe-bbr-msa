@@ -1,14 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'react-router-dom';
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [uniqueTags, setUniqueTags] = useState([]);
-    const [activeTag, setActiveTag] = useState("All");
+    const [activeTag, setActiveTag] = useState("Alle");
     const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
-    const [searchParams, setSearchParams] = useSearchParams();
 
     const parseCSVRow = useCallback((row) => {
         const result = [];
@@ -63,13 +61,15 @@ export default function FetchCSVData() {
             .then((response) => {
                 let parsedCsvData = parseCSV(response.data);
 
+                parsedCsvData = parsedCsvData.sort(() => Math.random() - 0.5);
+
                 const tags = new Set();
                 parsedCsvData.forEach(item => {
                     const itemTags = item.Tags ? item.Tags.split(',').map(tag => tag.trim()) : [];
                     itemTags.forEach(tag => tags.add(tag));
                 });
 
-                setUniqueTags(["All", ...Array.from(tags)]);
+                setUniqueTags(["Alle", ...Array.from(tags)]);
                 setCsvData(parsedCsvData);
                 setFilteredData(parsedCsvData);
             })
@@ -80,7 +80,7 @@ export default function FetchCSVData() {
 
     const handleFilter = (tag) => {
         setActiveTag(tag);
-        if (tag === "All") {
+        if (tag === "Alle") {
             setFilteredData(csvData);
         } else {
             setFilteredData(
@@ -92,12 +92,10 @@ export default function FetchCSVData() {
     };
 
     const handleRowClick = (item) => {
-        setSearchParams({ task: item.id });
         setSelectedItem(item); // Display the clicked item's profile
     };
 
     const handleCloseProfile = () => {
-        setSearchParams({});
         setSelectedItem(null); // Close the profile and show the list again
     };
 
@@ -105,23 +103,13 @@ export default function FetchCSVData() {
         fetchCSVData();
     }, [fetchCSVData]);
 
-    useEffect(() => {
-        const taskId = searchParams.get('task');
-        if (taskId) {
-            const taskItem = csvData.find(item => item.id === taskId);
-            if (taskItem) setSelectedItem(taskItem);
-        } else {
-            setSelectedItem(null);
-        }
-    }, [searchParams, csvData]);
-
     return (
         <div className="overflow-x-auto">
             {!selectedItem ? (
                 <>
                     {/* Tags Section */}
                     <div className="mb-4">
-                        <h3 className="text-xl font-bold mb-2">Tags</h3>
+                        {/*<h3 className="text-xl font-bold mb-2">Tags</h3>*/}
                         <div className="flex flex-wrap gap-2">
                             {uniqueTags.map((tag, index) => (
                                 <button
@@ -143,7 +131,15 @@ export default function FetchCSVData() {
                     <table className="min-w-full table-auto border-collapse border border-gray-200">
                         <thead>
                             <tr className="bg-blue-500 text-white">
-                                <th className="border border-gray-300 px-4 py-2 text-left">Title</th>
+                                <th
+                                    className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
+                                    onClick={() => {
+                                        const shuffledData = [...filteredData].sort(() => Math.random() - 0.5);
+                                        setFilteredData(shuffledData);
+                                    }}
+                                >
+                                    Aufgaben für BBR und MSA <small>klick für neue Auswahl</small>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -170,63 +166,99 @@ export default function FetchCSVData() {
                     </button>
                     <h2 className="text-2xl font-bold mb-4">{selectedItem.Title}</h2>
                     <h3 className="text-xl font-medium mb-4">{selectedItem.Description}</h3>
-                    {/* Render Images, Videos, Audio */}
                     {Array.from({ length: 10 }).map((_, index) => {
                         const imageKey = `Image${index + 1}`;
                         const captionKey = `Caption${index + 1}`;
-                        const videoKey = `Video${index + 1}`;
-                        const audioKey = `Audio${index + 1}`;
-
-                        return (
-                            <div key={index} className="mb-4">
-                                {selectedItem[imageKey] && (
-                                    <div className="mb-4">
-                                        <img
-                                            src={selectedItem[imageKey]}
-                                            alt={selectedItem[captionKey] || `Image ${index + 1}`}
-                                            className="w-full h-auto mb-2 rounded"
-                                        />
-                                        {selectedItem[captionKey] && (
-                                            <p className="text-sm text-gray-700">
-                                                {selectedItem[captionKey].split('\n').map((line, i) => (
-                                                    <span key={i}>
-                                                        {line}
-                                                        <br />
-                                                    </span>
-                                                ))}
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
-                                {!selectedItem[imageKey] && selectedItem[captionKey] && (
-                                    <div className="mb-4">
-                                        <p className="text-lg font-semibold text-gray-900">
-                                            {selectedItem[captionKey]}
-                                        </p>
-                                    </div>
-                                )}
-                                {selectedItem[videoKey] && (
-                                    <div className="mb-4">
-                                        <video controls className="w-full rounded-md">
-                                            <source src={selectedItem[videoKey]} type="video/mp4" />
-                                            Your browser does not support the video tag.
-                                        </video>
-                                    </div>
-                                )}
-                                {selectedItem[audioKey] && (
-                                    <div className="mb-4">
-                                        <audio controls className="w-full">
-                                            <source src={selectedItem[audioKey]} type="audio/mpeg" />
-                                            Your browser does not support the audio tag.
-                                        </audio>
-                                    </div>
-                                )}
-                            </div>
-                        );
+                        // If there is an image, display it along with the caption
+                        if (selectedItem[imageKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <img
+                                        src={selectedItem[imageKey]}
+                                        alt={selectedItem[captionKey] || `Image ${index + 1}`}
+                                        className="w-full h-auto mb-2 rounded"
+                                    />
+                                    {selectedItem[captionKey] && 
+                                    <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>
+                                    }
+                                </div>
+                            );
+                        }
+                        // If there is no image but a caption, display the caption with larger font
+                        if (!selectedItem[imageKey] && selectedItem[captionKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <p className="text-lg font-semibold text-gray-900">
+                                        {selectedItem[captionKey]}
+                                    </p>
+                                </div>
+                            );
+                        }
+                        // If neither image nor caption exists, return null
+                        return null;
                     })}
+                    {/* Render Links */}
+                    {Array.from({ length: 3 }).map((_, index) => {
+                        const linkKey = `Link${index + 1}`;
+                        const urlKey = `url${index + 1}`;
+                        if (selectedItem[linkKey] && selectedItem[urlKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <a
+                                        href={selectedItem[urlKey]}
+                                        target="_blank"
+                                        rel="nofollow noopener noreferrer"
+                                        className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
+                                    >
+                                        {selectedItem[linkKey]}
+                                    </a>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })}
+
+                    {/* Render Video */}
+                    {Array.from({ length: 1 }).map((_, index) => {
+                        const videoKey = `Video${index + 1}`;
+                        if (selectedItem[videoKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <video
+                                        controls
+                                        className="w-full rounded-md"
+                                    >
+                                        <source src={selectedItem[videoKey]} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })}
+
+
+                    {/* Render Audio */}
+                    {Array.from({ length: 1 }).map((_, index) => {
+                        const audioKey = `Audio${index + 1}`;
+                        if (selectedItem[audioKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <audio
+                                        controls
+                                        className="w-full"
+                                    >
+                                        <source src={selectedItem[audioKey]} type="audio/mpeg" />
+                                        Your browser does not support the audio tag.
+                                    </audio>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })}
+                    
                 </div>
             )}
         </div>
     );
 }
-

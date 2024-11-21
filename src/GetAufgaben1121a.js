@@ -138,7 +138,7 @@ export default function FetchCSVData() {
                                         setFilteredData(shuffledData);
                                     }}
                                 >
-                                    Aufgaben für BBR und MSA
+                                    Aufgaben für BBR und MSA <small>klick für neue Auswahl</small>
                                 </th>
                             </tr>
                         </thead>
@@ -166,25 +166,66 @@ export default function FetchCSVData() {
                     </button>
                     <h2 className="text-2xl font-bold mb-4">{selectedItem.Title}</h2>
                     <h3 className="text-xl font-medium mb-4">{selectedItem.Description}</h3>
+                    
+                    
+
+
                     {Array.from({ length: 10 }).map((_, index) => {
-                        const imageKey = `Image${index + 1}`;
-                        const captionKey = `Caption${index + 1}`;
-                        //console.log(imageKey)
-                        //console.log(selectedItem[imageKey])
-                        if (selectedItem[imageKey]) {
-                            return (
-                                <div key={index} className="mb-4">
-                                    <img
-                                        src={selectedItem[imageKey]}
-                                        alt={selectedItem[captionKey] || `Image ${index + 1}`}
-                                        className="w-full h-auto mb-2 rounded"
-                                    />
-                                    {selectedItem[captionKey] && <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>}
-                                </div>
-                            );
-                        }
-                        return null;
-                    })}
+    const imageKey = `Image${index + 1}`;
+    const captionKey = `Caption${index + 1}`;
+    const videoKey = `Video${index + 1}`;
+    const audioKey = `Audio${index + 1}`;
+
+    return (
+        <div key={index} className="mb-4">
+            {/* Render Image with Caption or Caption only */}
+            {selectedItem[imageKey] && (
+                <div className="mb-4">
+                    <img
+                        src={selectedItem[imageKey]}
+                        alt={selectedItem[captionKey] || `Image ${index + 1}`}
+                        className="w-full h-auto mb-2 rounded"
+                    />
+                    {selectedItem[captionKey] && (
+                        <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>
+                    )}
+                </div>
+            )}
+            {!selectedItem[imageKey] && selectedItem[captionKey] && (
+                <div className="mb-4">
+                    <p className="text-lg font-semibold text-gray-900">{selectedItem[captionKey]}</p>
+                </div>
+            )}
+
+            {/* Render Video */}
+            {selectedItem[videoKey] && (
+                <div className="mb-4">
+                    <video controls className="w-full rounded-md">
+                        <source src={selectedItem[videoKey]} type="video/mp4" />
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            )}
+
+            {/* Render Audio */}
+            {selectedItem[audioKey] && (
+                <div className="mb-4">
+                    <audio controls className="w-full">
+                        <source src={selectedItem[audioKey]} type="audio/mpeg" />
+                        Your browser does not support the audio tag.
+                    </audio>
+                </div>
+            )}
+        </div>
+    );
+})}
+
+
+
+
+
+
+
                 </div>
             )}
         </div>

@@ -1,6 +1,6 @@
 {
-  "name": "schlau.app",
-  "short_name" : "schlau.app",
+  "name": "mathe-bbr-msa.app",
+  "short_name" : "mathe-bbr-msa.app",
   "start_url": "/",
   "scope" : "./",
   "prefer_related_applications": false,
