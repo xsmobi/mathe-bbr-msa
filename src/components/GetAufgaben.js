@@ -201,7 +201,6 @@ export default function FetchCSVData() {
                     {Array.from({ length: 3 }).map((_, index) => {
                         const linkKey = `Link${index + 1}`;
                         const urlKey = `url${index + 1}`;
-
                         if (selectedItem[linkKey] && selectedItem[urlKey]) {
                             return (
                                 <div key={index} className="mb-4">
@@ -216,46 +215,48 @@ export default function FetchCSVData() {
                                 </div>
                             );
                         }
+                        return null;
+                    })}
 
+                    {/* Render Video */}
+                    {Array.from({ length: 1 }).map((_, index) => {
+                        const videoKey = `Video${index + 1}`;
+                        if (selectedItem[videoKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <video
+                                        controls
+                                        className="w-full rounded-md"
+                                    >
+                                        <source src={selectedItem[videoKey]} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            );
+                        }
                         return null;
                     })}
 
 
-{Array.from({ length: 1 }).map((_, index) => {
-    const videoKey = `Video${index + 1}`;
-
-    if (selectedItem[videoKey]) {
-        return (
-            <div key={index} className="mb-4">
-                <video
-                    controls
-                    className="w-full rounded-md"
-                >
-                    <source src={selectedItem[videoKey]} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-            </div>
-        );
-    }
-
-    return null;
-})}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    {/* Render Audio */}
+                    {Array.from({ length: 1 }).map((_, index) => {
+                        const audioKey = `Audio${index + 1}`;
+                        if (selectedItem[audioKey]) {
+                            return (
+                                <div key={index} className="mb-4">
+                                    <audio
+                                        controls
+                                        className="w-full"
+                                    >
+                                        <source src={selectedItem[audioKey]} type="audio/mpeg" />
+                                        Your browser does not support the audio tag.
+                                    </audio>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })}
+                    
                 </div>
             )}
         </div>
