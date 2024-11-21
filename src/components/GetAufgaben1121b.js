@@ -101,11 +101,6 @@ export default function FetchCSVData() {
         setSelectedItem(null); // Close the profile and show the list again
     };
 
-    const handleTitleClick = () => {
-        const shuffledData = [...filteredData].sort(() => Math.random() - 0.5);
-        setFilteredData(shuffledData);
-    };
-
     useEffect(() => {
         fetchCSVData();
     }, [fetchCSVData]);
@@ -148,15 +143,7 @@ export default function FetchCSVData() {
                     <table className="min-w-full table-auto border-collapse border border-gray-200">
                         <thead>
                             <tr className="bg-blue-500 text-white">
-                                <th
-                                    className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
-                                    onClick={handleTitleClick}
-                                >
-                                    Aufgaben, Beispiele, Lösungen <small>(klick für neu mischen)</small>
-                                </th>
-                            
-                            
-                            
+                                <th className="border border-gray-300 px-4 py-2 text-left">Title</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -308,3 +295,4 @@ export default function FetchCSVData() {
         </div>
     );
 }
+
