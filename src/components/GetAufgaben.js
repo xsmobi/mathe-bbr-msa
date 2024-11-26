@@ -15,22 +15,9 @@ export default function FetchCSVData() {
         return text.replace(/([a-zA-Z0-9]+)\^(-?[a-zA-Z0-9]+)/g, (_, base, exponent) => `${base}<sup>${exponent}</sup>`);
     };
 
-    const renderWithSuperscript = (text) => {
-        if (!text) return null;
-    
-        return text.split(/(\d+\^\d+)/g).map((chunk, index) => {
-            const match = chunk.match(/(\d+)\^(\d+)/);
-            if (match) {
-                const [_, base, exponent] = match;
-                return (
-                    <span key={index}>
-                        {base}
-                        <sup>{exponent}</sup>
-                    </span>
-                );
-            }
-            return chunk;
-        });
+    const textwithbr = (text) => {
+        if (!text) return ""; // Handle null or undefined text
+        return text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
     };
 
     const parseCSVRow = useCallback((row) => {
@@ -240,8 +227,8 @@ export default function FetchCSVData() {
                                 {!selectedItem[imageKey] && selectedItem[captionKey] && (
                                     <div className="mb-4">
                                         <p
-                                            className="text-lg font-semibold text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: pow(selectedItem[captionKey]) }}
+                                            className="text-center leading-8 text-lg font-semibold text-gray-900"
+                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
                                         />
                                     </div>
                                 )}
