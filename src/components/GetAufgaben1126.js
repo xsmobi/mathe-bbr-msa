@@ -10,29 +10,6 @@ export default function FetchCSVData() {
     const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
     const [searchParams, setSearchParams] = useSearchParams();
 
-    const pow = (text) => {
-        if (!text) return ""; // Handle null or undefined text
-        return text.replace(/([a-zA-Z0-9]+)\^(-?[a-zA-Z0-9]+)/g, (_, base, exponent) => `${base}<sup>${exponent}</sup>`);
-    };
-
-    const renderWithSuperscript = (text) => {
-        if (!text) return null;
-    
-        return text.split(/(\d+\^\d+)/g).map((chunk, index) => {
-            const match = chunk.match(/(\d+)\^(\d+)/);
-            if (match) {
-                const [_, base, exponent] = match;
-                return (
-                    <span key={index}>
-                        {base}
-                        <sup>{exponent}</sup>
-                    </span>
-                );
-            }
-            return chunk;
-        });
-    };
-
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -101,7 +78,6 @@ export default function FetchCSVData() {
             });
     }, [parseCSV]);
 
-    
     const handleFilter = (tag) => {
         setActiveTag(tag);
         if (tag === "All") {
@@ -190,7 +166,7 @@ export default function FetchCSVData() {
                                     className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"} cursor-pointer`}
                                     onClick={() => handleRowClick(item)}
                                 >
-                                    <td className="border border-gray-300 px-4 py-2" dangerouslySetInnerHTML={{ __html: pow(item.Title) }}></td>
+                                    <td className="border border-gray-300 px-4 py-2">{item.Title}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -201,25 +177,19 @@ export default function FetchCSVData() {
                 <div className="relative p-4 bg-gray-100 border border-gray-300 rounded-md">
                     <button
                         onClick={handleCloseProfile}
-                        className="absolute top-2 right-2 text-gray-500 text-xl hover:text-gray-700 text-xl font-bold"
+                        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
                     >
                         ×
                     </button>
-                    <h2
-                        className="text-2xl mb-4"
-                        dangerouslySetInnerHTML={{ __html: pow(selectedItem.Title) }}
-                    />
-                    <h3 
-                        className="text-xl text-slate-500 mb-4"
-                        dangerouslySetInnerHTML={{ __html: pow(selectedItem.Description) }}
-                    />
+                    <h2 className="text-2xl font-bold mb-4">{selectedItem.Title}</h2>
+                    <h3 className="text-xl font-medium mb-4">{selectedItem.Description}</h3>
                     {/* Render Images, Videos, Audio */}
                     {Array.from({ length: 10 }).map((_, index) => {
                         const imageKey = `Image${index + 1}`;
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
                         const audioKey = `Audio${index + 1}`;
-                        console.log("Processed Caption:", pow(selectedItem[captionKey]));
+
                         return (
                             <div key={index} className="mb-4">
                                 {selectedItem[imageKey] && (
@@ -230,19 +200,22 @@ export default function FetchCSVData() {
                                             className="w-full h-auto mb-2 rounded"
                                         />
                                         {selectedItem[captionKey] && (
-                                        <p
-                                            className="text-base text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: pow(selectedItem[captionKey]) }}
-                                        />
-                                        )}  
+                                            <p className="text-sm text-gray-700">
+                                                {selectedItem[captionKey].split('\n').map((line, i) => (
+                                                    <span key={i}>
+                                                        {line}
+                                                        <br />
+                                                    </span>
+                                                ))}
+                                            </p>
+                                        )}
                                     </div>
                                 )}
                                 {!selectedItem[imageKey] && selectedItem[captionKey] && (
                                     <div className="mb-4">
-                                        <p
-                                            className="text-lg font-semibold text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: pow(selectedItem[captionKey]) }}
-                                        />
+                                        <p className="text-lg font-semibold text-gray-900">
+                                            {selectedItem[captionKey]}
+                                        </p>
                                     </div>
                                 )}
                                 {selectedItem[videoKey] && (
@@ -264,6 +237,42 @@ export default function FetchCSVData() {
                             </div>
                         );
                     })}
+
+
+
+{/*
+{Array.from({ length: 10 }).map((_, index) => {
+    const imageKey = `Image${index + 1}`;
+    const captionKey = `Caption${index + 1}`;
+
+    if (selectedItem[imageKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <img
+                    src={selectedItem[imageKey]}
+                    alt={selectedItem[captionKey] || `Image ${index + 1}`}
+                    className="w-full h-auto mb-2 rounded"
+                />
+                {selectedItem[captionKey] && (
+                    <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>
+                )}
+            </div>
+        );
+    } 
+
+    if (!selectedItem[imageKey] && selectedItem[captionKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <p className="text-lg font-semibold text-gray-900">
+                    {selectedItem[captionKey]}
+                </p>
+            </div>
+        );
+    }
+
+    return null;
+})}
+*/}
 
 {/* Render Links */}
 {Array.from({ length: 3 }).map((_, index) => {

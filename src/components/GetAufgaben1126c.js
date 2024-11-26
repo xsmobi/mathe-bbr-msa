@@ -12,7 +12,7 @@ export default function FetchCSVData() {
 
     const pow = (text) => {
         if (!text) return ""; // Handle null or undefined text
-        return text.replace(/([a-zA-Z0-9]+)\^(-?[a-zA-Z0-9]+)/g, (_, base, exponent) => `${base}<sup>${exponent}</sup>`);
+        return text.replace(/([a-zA-Z0-9]+)\^([a-zA-Z0-9]+)/g, (_, base, exponent) => `${base}<sup>${exponent}</sup>`);
     };
 
     const renderWithSuperscript = (text) => {
@@ -201,18 +201,14 @@ export default function FetchCSVData() {
                 <div className="relative p-4 bg-gray-100 border border-gray-300 rounded-md">
                     <button
                         onClick={handleCloseProfile}
-                        className="absolute top-2 right-2 text-gray-500 text-xl hover:text-gray-700 text-xl font-bold"
+                        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
                     >
                         ×
                     </button>
-                    <h2
-                        className="text-2xl mb-4"
-                        dangerouslySetInnerHTML={{ __html: pow(selectedItem.Title) }}
-                    />
-                    <h3 
-                        className="text-xl text-slate-500 mb-4"
-                        dangerouslySetInnerHTML={{ __html: pow(selectedItem.Description) }}
-                    />
+                    <h2 className="text-2xl mb-4" dangerouslySetInnerHTML={{ __html: pow(selectedItem.Title) }}></h2>
+                    <h3 className="text-xl text-slate-500 mb-4" dangerouslySetInnerHTML={{ __html: pow(selectedItem.Description) }}></h3>
+                    
+                    
                     {/* Render Images, Videos, Audio */}
                     {Array.from({ length: 10 }).map((_, index) => {
                         const imageKey = `Image${index + 1}`;
@@ -230,10 +226,7 @@ export default function FetchCSVData() {
                                             className="w-full h-auto mb-2 rounded"
                                         />
                                         {selectedItem[captionKey] && (
-                                        <p
-                                            className="text-base text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: pow(selectedItem[captionKey]) }}
-                                        />
+                                            <p className="text-base text-gray-700">{selectedItem[captionKey]}</p>
                                         )}  
                                     </div>
                                 )}
@@ -264,6 +257,42 @@ export default function FetchCSVData() {
                             </div>
                         );
                     })}
+
+
+
+{/*
+{Array.from({ length: 10 }).map((_, index) => {
+    const imageKey = `Image${index + 1}`;
+    const captionKey = `Caption${index + 1}`;
+
+    if (selectedItem[imageKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <img
+                    src={selectedItem[imageKey]}
+                    alt={selectedItem[captionKey] || `Image ${index + 1}`}
+                    className="w-full h-auto mb-2 rounded"
+                />
+                {selectedItem[captionKey] && (
+                    <p className="text-sm text-gray-700">{selectedItem[captionKey]}</p>
+                )}
+            </div>
+        );
+    } 
+
+    if (!selectedItem[imageKey] && selectedItem[captionKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <p className="text-lg font-semibold text-gray-900">
+                    {selectedItem[captionKey]}
+                </p>
+            </div>
+        );
+    }
+
+    return null;
+})}
+*/}
 
 {/* Render Links */}
 {Array.from({ length: 3 }).map((_, index) => {
