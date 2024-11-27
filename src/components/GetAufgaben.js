@@ -122,10 +122,15 @@ export default function FetchCSVData() {
             const response = await axios.get(csvUrl);
             const parsedCsvData = parseCSV(response.data);
     
+            // Filter rows based on the "Publish" column
+            const publishedData = parsedCsvData.filter(item =>
+                item.Publish?.toLowerCase().includes("ok")
+            );
+    
             const tags = new Set();
             const types = new Set();
     
-            parsedCsvData.forEach(item => {
+            publishedData.forEach(item => {
                 if (item.Tags) {
                     item.Tags.split(',').forEach(tag => tags.add(tag.trim()));
                 }
@@ -136,8 +141,8 @@ export default function FetchCSVData() {
     
             setUniqueTags(["All", ...Array.from(tags)]);
             setUniqueTypes(["All", ...Array.from(types)]);
-            setCsvData(parsedCsvData);
-            setFilteredData(parsedCsvData);
+            setCsvData(publishedData); // Use filtered data
+            setFilteredData(publishedData); // Use filtered data
         } catch (error) {
             console.error('Error fetching CSV data:', error);
         }
