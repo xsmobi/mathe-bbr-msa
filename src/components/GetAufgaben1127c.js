@@ -11,7 +11,7 @@ export default function FetchCSVData() {
     const [activeType, setActiveType] = useState("All");
     const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
     const [searchParams, setSearchParams] = useSearchParams();
-    //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
+    const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
 
 
     const pow = (text) => {
@@ -23,6 +23,20 @@ export default function FetchCSVData() {
         if (!text) return ""; // Handle null or undefined text
         return text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
     };
+    /*
+    const fetchConfigSpreadsheet = async (user) => {
+        try {
+            const response = await axios.get(CONFIG_URL);
+            const configData = parseCSV(response.data);
+            const userConfig = configData.find((item) => item.user === user);
+    
+            return userConfig?.CSVurl || null; // Return the URL if found, or null
+        } catch (error) {
+            console.error("Error fetching config spreadsheet:", error);
+            return null;
+        }
+    };
+    */
 
     const parseCSVRow = useCallback((row) => {
         const result = [];
@@ -75,7 +89,14 @@ export default function FetchCSVData() {
         let csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSVHWDusXO-XG4BoXsbGa82d1Mb-fK1aEQn83rUn0RkVMH_PWNIXis1AmUK7GqU4Lps-6fKFlaIaMTM/pub?output=csv';
     
         const user = searchParams.get("user");
-
+        /*
+        if (user) {
+            const userCsvUrl = await fetchConfigSpreadsheet(user);
+            if (userCsvUrl) {
+                csvUrl = userCsvUrl;
+            }
+        }
+        */
     
         try {
             const response = await axios.get(csvUrl);
@@ -102,23 +123,8 @@ export default function FetchCSVData() {
         }
     }, [searchParams, parseCSV]);
 
-    const handleFilter = (tag) => {
-        setActiveTag(tag);
-        let filtered = csvData;
-    
-        if (tag !== "All") {
-            filtered = filtered.filter(item =>
-                item.Tags?.split(',').map(tag => tag.trim()).includes(tag)
-            );
-        }
-        if (activeType !== "All") {
-            filtered = filtered.filter(item => item.Type?.trim() === activeType);
-        }
-        setFilteredData(filtered);
-    };
-    
-    const handleTypeFilter = (type) => {
-        setActiveType(type);
+    /*
+    useEffect(() => {
         let filtered = csvData;
     
         if (activeTag !== "All") {
@@ -126,12 +132,41 @@ export default function FetchCSVData() {
                 item.Tags?.split(',').map(tag => tag.trim()).includes(activeTag)
             );
         }
-        if (type !== "All") {
-            filtered = filtered.filter(item => item.Type?.trim() === type);
+        if (activeType !== "All") {
+            filtered = filtered.filter(item => item.Type?.trim() === activeType);
         }
-        setFilteredData(filtered);
-    };
     
+        setFilteredData(filtered);
+    }, [csvData, activeTag, activeType]);
+    */
+
+    
+    const handleFilter = (tag) => {
+        setActiveTag(tag);
+        if (tag === "All") {
+            setFilteredData(csvData);
+        } else {
+            setFilteredData(
+                csvData.filter(item =>
+                    item.Tags?.split(',').map(tag => tag.trim()).includes(tag)
+                )
+            );
+        }
+    };
+
+    const handleTypeFilter = (type) => {
+        setActiveType(type);
+        if (type === "All") {
+            setFilteredData(csvData); // Reset filtering
+        } else {
+            setFilteredData(
+                csvData.filter(item =>
+                    item.Type?.trim() === type
+                )
+            );
+        }
+    };
+
     const handleRowClick = (item) => {
         setSearchParams({ task: item.id });
         setSelectedItem(item); // Display the clicked item's profile
@@ -169,7 +204,7 @@ export default function FetchCSVData() {
 
                     {/* Types Section */}
                     <div className="mb-4">
-                        {/*<h3 className="text-xl font-bold mb-2">Types</h3>*/}
+                        <h3 className="text-xl font-bold mb-2">Types</h3>
                         <div className="flex flex-wrap gap-2">
                             {uniqueTypes.map((type, index) => (
                                 <button
@@ -177,8 +212,8 @@ export default function FetchCSVData() {
                                     onClick={() => handleTypeFilter(type)}
                                     className={`${
                                         activeType === type
-                                            ? "bg-zinc-700 text-white"
-                                            : "bg-zinc-500 hover:bg-green-700 text-white"
+                                            ? "bg-green-700 text-white"
+                                            : "bg-green-500 hover:bg-green-700 text-white"
                                     } font-bold py-1 px-2 rounded-full text-xs`}
                                 >
                                     {type}
@@ -187,9 +222,10 @@ export default function FetchCSVData() {
                         </div>
                     </div>
 
+
                     {/* Tags Section */}
                     <div className="mb-4">
-                        {/*<h3 className="text-xl font-bold mb-2">Tags</h3>*/}
+                        <h3 className="text-xl font-bold mb-2">Tags</h3>
                         <div className="flex flex-wrap gap-2">
                             {uniqueTags.map((tag, index) => (
                                 <button
@@ -217,6 +253,9 @@ export default function FetchCSVData() {
                                 >
                                     Aufgaben, Beispiele, Lösungen <small>(klick für neu mischen)</small>
                                 </th>
+                            
+                            
+                            
                             </tr>
                         </thead>
                         <tbody>
@@ -301,28 +340,35 @@ export default function FetchCSVData() {
                         );
                     })}
 
-                    {/* Render Links */}
-                    {Array.from({ length: 3 }).map((_, index) => {
-                        const linkKey = `Link${index + 1}`;
-                        const urlKey = `url${index + 1}`;
+{/* Render Links */}
+{Array.from({ length: 3 }).map((_, index) => {
+    const linkKey = `Link${index + 1}`;
+    const urlKey = `url${index + 1}`;
 
-                        if (selectedItem[linkKey] && selectedItem[urlKey]) {
-                            return (
-                                <div key={index} className="mb-4">
-                                    <a
-                                        href={selectedItem[urlKey]}
-                                        target="_blank"
-                                        rel="nofollow noopener noreferrer"
-                                        className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
-                                    >
-                                        {selectedItem[linkKey]}
-                                    </a>
-                                </div>
-                            );
-                        }
+    if (selectedItem[linkKey] && selectedItem[urlKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <a
+                    href={selectedItem[urlKey]}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
+                >
+                    {selectedItem[linkKey]}
+                </a>
+            </div>
+        );
+    }
 
-                        return null;
-                    })}
+    return null;
+})}
+
+
+
+
+
+
+
                 </div>
             )}
         </div>

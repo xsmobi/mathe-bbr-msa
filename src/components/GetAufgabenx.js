@@ -11,8 +11,6 @@ export default function FetchCSVData() {
     const [activeType, setActiveType] = useState("All");
     const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
     const [searchParams, setSearchParams] = useSearchParams();
-    //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
-
 
     const pow = (text) => {
         if (!text) return ""; // Handle null or undefined text
@@ -23,7 +21,32 @@ export default function FetchCSVData() {
         if (!text) return ""; // Handle null or undefined text
         return text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
     };
+    /*
+    const parseCSVRow = useCallback((row) => {
+        const result = [];
+        let currentField = '';
+        let inQuotes = false;
 
+        for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+
+            if (char === '"' && row[i - 1] !== '\\') {
+                inQuotes = !inQuotes; // Toggle inQuotes flag for quotes
+            } else if (char === ',' && !inQuotes) {
+                result.push(currentField.trim());
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+
+        if (currentField) {
+            result.push(currentField.trim());
+        }
+
+        return result;
+    }, []);
+    */
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -49,6 +72,32 @@ export default function FetchCSVData() {
         return result;
     }, []);
 
+
+
+
+    /*
+    const parseCSV = useCallback((csvText) => {
+        if (!csvText) return [];
+
+        const rows = csvText.split(/\r?\n/);
+        if (rows.length === 0) return [];
+
+        const headers = parseCSVRow(rows[0]);
+        const data = [];
+
+        for (let i = 1; i < rows.length; i++) {
+            const rowData = parseCSVRow(rows[i]);
+            if (!rowData || rowData.length === 0) continue;
+
+            const rowObject = {};
+            for (let j = 0; j < headers.length; j++) {
+                rowObject[headers[j]?.trim()] = rowData[j]?.trim() || "";
+            }
+            data.push(rowObject);
+        }
+        return data;
+    }, [parseCSVRow]);
+    */
     const parseCSV = useCallback((csvText) => {
         if (!csvText) return [];
 
@@ -71,11 +120,36 @@ export default function FetchCSVData() {
         return data;
     }, [parseCSVRow]);
 
+    const fetchConfigSpreadsheet = async (user) => {
+        const configUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
+        try {
+            const response = await axios.get(configUrl);
+            const configData = parseCSV(response.data);
+            const userConfig = configData.find((item) => item.user === user);
+
+            return userConfig?.CSVurl || null; // Return the URL if found, or null
+        } catch (error) {
+            console.error("Error fetching config spreadsheet:", error);
+            return null;
+        }
+    };
+
+
+
+
+
+
+
     const fetchCSVData = useCallback(async () => {
         let csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSVHWDusXO-XG4BoXsbGa82d1Mb-fK1aEQn83rUn0RkVMH_PWNIXis1AmUK7GqU4Lps-6fKFlaIaMTM/pub?output=csv';
     
         const user = searchParams.get("user");
-
+        if (user) {
+            const userCsvUrl = await fetchConfigSpreadsheet(user);
+            if (userCsvUrl) {
+                csvUrl = userCsvUrl;
+            }
+        }
     
         try {
             const response = await axios.get(csvUrl);
@@ -100,38 +174,40 @@ export default function FetchCSVData() {
         } catch (error) {
             console.error('Error fetching CSV data:', error);
         }
-    }, [searchParams, parseCSV]);
+    }, [searchParams, parseCSV, fetchConfigSpreadsheet]);
+    
 
+    useEffect(() => {
+        fetchCSVData();
+    }, [fetchCSVData]);
+
+    
     const handleFilter = (tag) => {
         setActiveTag(tag);
-        let filtered = csvData;
-    
-        if (tag !== "All") {
-            filtered = filtered.filter(item =>
-                item.Tags?.split(',').map(tag => tag.trim()).includes(tag)
+        if (tag === "All") {
+            setFilteredData(csvData);
+        } else {
+            setFilteredData(
+                csvData.filter(item =>
+                    item.Tags?.split(',').map(tag => tag.trim()).includes(tag)
+                )
             );
         }
-        if (activeType !== "All") {
-            filtered = filtered.filter(item => item.Type?.trim() === activeType);
-        }
-        setFilteredData(filtered);
     };
-    
+
     const handleTypeFilter = (type) => {
         setActiveType(type);
-        let filtered = csvData;
-    
-        if (activeTag !== "All") {
-            filtered = filtered.filter(item =>
-                item.Tags?.split(',').map(tag => tag.trim()).includes(activeTag)
+        if (type === "All") {
+            setFilteredData(csvData); // Reset filtering
+        } else {
+            setFilteredData(
+                csvData.filter(item =>
+                    item.Type?.trim() === type
+                )
             );
         }
-        if (type !== "All") {
-            filtered = filtered.filter(item => item.Type?.trim() === type);
-        }
-        setFilteredData(filtered);
     };
-    
+
     const handleRowClick = (item) => {
         setSearchParams({ task: item.id });
         setSelectedItem(item); // Display the clicked item's profile
@@ -165,11 +241,9 @@ export default function FetchCSVData() {
         <div className="overflow-x-auto">
             {!selectedItem ? (
                 <>
-
-
                     {/* Types Section */}
                     <div className="mb-4">
-                        {/*<h3 className="text-xl font-bold mb-2">Types</h3>*/}
+                        <h3 className="text-xl font-bold mb-2">Types</h3>
                         <div className="flex flex-wrap gap-2">
                             {uniqueTypes.map((type, index) => (
                                 <button
@@ -177,8 +251,8 @@ export default function FetchCSVData() {
                                     onClick={() => handleTypeFilter(type)}
                                     className={`${
                                         activeType === type
-                                            ? "bg-zinc-700 text-white"
-                                            : "bg-zinc-500 hover:bg-green-700 text-white"
+                                            ? "bg-green-700 text-white"
+                                            : "bg-green-500 hover:bg-green-700 text-white"
                                     } font-bold py-1 px-2 rounded-full text-xs`}
                                 >
                                     {type}
@@ -187,9 +261,10 @@ export default function FetchCSVData() {
                         </div>
                     </div>
 
+
                     {/* Tags Section */}
                     <div className="mb-4">
-                        {/*<h3 className="text-xl font-bold mb-2">Tags</h3>*/}
+                        <h3 className="text-xl font-bold mb-2">Tags</h3>
                         <div className="flex flex-wrap gap-2">
                             {uniqueTags.map((tag, index) => (
                                 <button
@@ -217,6 +292,9 @@ export default function FetchCSVData() {
                                 >
                                     Aufgaben, Beispiele, Lösungen <small>(klick für neu mischen)</small>
                                 </th>
+                            
+                            
+                            
                             </tr>
                         </thead>
                         <tbody>
@@ -301,28 +379,35 @@ export default function FetchCSVData() {
                         );
                     })}
 
-                    {/* Render Links */}
-                    {Array.from({ length: 3 }).map((_, index) => {
-                        const linkKey = `Link${index + 1}`;
-                        const urlKey = `url${index + 1}`;
+{/* Render Links */}
+{Array.from({ length: 3 }).map((_, index) => {
+    const linkKey = `Link${index + 1}`;
+    const urlKey = `url${index + 1}`;
 
-                        if (selectedItem[linkKey] && selectedItem[urlKey]) {
-                            return (
-                                <div key={index} className="mb-4">
-                                    <a
-                                        href={selectedItem[urlKey]}
-                                        target="_blank"
-                                        rel="nofollow noopener noreferrer"
-                                        className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
-                                    >
-                                        {selectedItem[linkKey]}
-                                    </a>
-                                </div>
-                            );
-                        }
+    if (selectedItem[linkKey] && selectedItem[urlKey]) {
+        return (
+            <div key={index} className="mb-4">
+                <a
+                    href={selectedItem[urlKey]}
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                    className="block px-4 py-2 bg-blue-500 text-white font-bold rounded-md hover:bg-blue-600 transition-colors"
+                >
+                    {selectedItem[linkKey]}
+                </a>
+            </div>
+        );
+    }
 
-                        return null;
-                    })}
+    return null;
+})}
+
+
+
+
+
+
+
                 </div>
             )}
         </div>
