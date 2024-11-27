@@ -10,7 +10,6 @@ export default function FetchCSVData() {
     const [uniqueTypes, setUniqueTypes] = useState([]);
     const [activeType, setActiveType] = useState("All");
     const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
-    const [userConfig, setUserConfig] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
     //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
 
@@ -38,19 +37,6 @@ export default function FetchCSVData() {
             return null;
         }
     };
-
-    useEffect(() => {
-        const loadUserConfig = async () => {
-            const config = await fetchConfig(); // Fetch the full configuration JSON
-            if (config) {
-                const user = searchParams.get('user'); // Get 'user' from URL parameters
-                const selectedConfig = config.users[user] || config.default; // Use user-specific or default config
-                setUserConfig(selectedConfig); // Update the `userConfig` state
-            }
-        };
-        loadUserConfig();
-    }, [searchParams]);
-    
 
     const getGoogleSheetURL = async () => {
         const params = new URLSearchParams(window.location.search);
@@ -112,8 +98,7 @@ export default function FetchCSVData() {
 
     const fetchCSVData = useCallback(async () => {
         try {
-            if (!userConfig) return; // Wait until userConfig is set
-            const csvUrl = userConfig.url; // Get the URL from userConfig
+            const csvUrl = await getGoogleSheetURL(); // Get the appropriate URL
             if (!csvUrl) {
                 console.error("No valid Google Sheet URL found.");
                 return;
@@ -141,8 +126,7 @@ export default function FetchCSVData() {
         } catch (error) {
             console.error('Error fetching CSV data:', error);
         }
-    }, [parseCSV, userConfig]);
-    
+    }, [parseCSV]);
     
 
     const handleFilter = (tag) => {
@@ -176,16 +160,12 @@ export default function FetchCSVData() {
     };
     
     const handleRowClick = (item) => {
-        const user = searchParams.get('user'); // Retrieve the current 'user' parameter
-        const newParams = user ? { user, task: item.id } : { task: item.id }; // Retain 'user' if present
-        setSearchParams(newParams);
+        setSearchParams({ task: item.id });
         setSelectedItem(item); // Display the clicked item's profile
     };
 
     const handleCloseProfile = () => {
-        const user = searchParams.get('user'); // Retrieve the current 'user' parameter
-        const newParams = user ? { user } : {}; // Retain only 'user' if present
-        setSearchParams(newParams);
+        setSearchParams({});
         setSelectedItem(null); // Close the profile and show the list again
     };
 
@@ -210,28 +190,6 @@ export default function FetchCSVData() {
 
     return (
         <div className="overflow-x-auto">
-            {/* Header */}
-            {userConfig && (
-                <header className="relative flex items-center justify-between mb-4">
-                    <h1 className="text-3xl font-bold text-blue-500">
-                        {userConfig.title}
-                    </h1>
-                    {userConfig.logo && (
-                        <img
-                            className="h-12 w-12 rounded-md"
-                            src={userConfig.logo}
-                            alt={`${userConfig.company} Logo`}
-                        />
-                    )}
-                </header>
-            )}
-            {/* Subheader */}
-            {userConfig?.tagline && (
-                <h2 className="text-xl text-gray-700 mb-4">
-                    {userConfig.tagline}
-                </h2>
-            )}
-
             {!selectedItem ? (
                 <>
                     {/* Types Section */}
@@ -391,12 +349,6 @@ export default function FetchCSVData() {
                         return null;
                     })}
                 </div>
-            )}
-                {/* Footer */}
-                {userConfig && (
-                <footer className="mt-4 text-center text-sm text-gray-600">
-                    <p>{userConfig.company}</p>
-                </footer>
             )}
         </div>
     );
