@@ -7,8 +7,6 @@ export default function FetchCSVData() {
     const [filteredData, setFilteredData] = useState([]);
     const [uniqueTags, setUniqueTags] = useState([]);
     const [activeTag, setActiveTag] = useState("All");
-    const [uniqueTypes, setUniqueTypes] = useState([]);
-    const [activeType, setActiveType] = useState("All");
     const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
     const [searchParams, setSearchParams] = useSearchParams();
 
@@ -80,21 +78,8 @@ export default function FetchCSVData() {
                     const itemTags = item.Tags ? item.Tags.split(',').map(tag => tag.trim()) : [];
                     itemTags.forEach(tag => tags.add(tag));
                 });
+
                 setUniqueTags(["All", ...Array.from(tags)]);
-
-                const types = new Set();
-                parsedCsvData.forEach(item => {
-                    if (item.Type) {
-                        types.add(item.Type.trim());
-                    }
-                });
-                setUniqueTypes(["All", ...Array.from(types)]);
-
-
-
-
-
-
                 setCsvData(parsedCsvData);
                 setFilteredData(parsedCsvData);
             })
@@ -112,19 +97,6 @@ export default function FetchCSVData() {
             setFilteredData(
                 csvData.filter(item =>
                     item.Tags?.split(',').map(tag => tag.trim()).includes(tag)
-                )
-            );
-        }
-    };
-
-    const handleTypeFilter = (type) => {
-        setActiveType(type);
-        if (type === "All") {
-            setFilteredData(csvData); // Reset filtering
-        } else {
-            setFilteredData(
-                csvData.filter(item =>
-                    item.Type?.trim() === type
                 )
             );
         }
@@ -163,29 +135,6 @@ export default function FetchCSVData() {
         <div className="overflow-x-auto">
             {!selectedItem ? (
                 <>
-
-
-                    {/* Types Section */}
-                    <div className="mb-4">
-                        <h3 className="text-xl font-bold mb-2">Types</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {uniqueTypes.map((type, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handleTypeFilter(type)}
-                                    className={`${
-                                        activeType === type
-                                            ? "bg-green-700 text-white"
-                                            : "bg-green-500 hover:bg-green-700 text-white"
-                                    } font-bold py-1 px-2 rounded-full text-xs`}
-                                >
-                                    {type}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-
                     {/* Tags Section */}
                     <div className="mb-4">
                         <h3 className="text-xl font-bold mb-2">Tags</h3>
