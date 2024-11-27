@@ -24,6 +24,31 @@ export default function FetchCSVData() {
         return text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
     };
 
+    const fetchConfig = async () => {
+        try {
+            const response = await fetch('https://xsmobi.github.io/mathe-bbr-msa-config/config.json');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const config = await response.json();
+            return config;
+        } catch (error) {
+            console.error("Error fetching configuration JSON:", error);
+            return null;
+        }
+    };
+
+    const getGoogleSheetURL = async () => {
+        const params = new URLSearchParams(window.location.search);
+        const user = params.get('user'); // Extract 'user' parameter from URL
+        const config = await fetchConfig();
+    
+        if (config) {
+            return config.users[user]?.url || config.default.url; // Fallback to default URL if user not found
+        }
+        return null;
+    };
+
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -71,6 +96,7 @@ export default function FetchCSVData() {
         return data;
     }, [parseCSVRow]);
 
+    /*
     const fetchCSVData = useCallback(async () => {
         let csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSVHWDusXO-XG4BoXsbGa82d1Mb-fK1aEQn83rUn0RkVMH_PWNIXis1AmUK7GqU4Lps-6fKFlaIaMTM/pub?output=csv';
     
@@ -101,6 +127,40 @@ export default function FetchCSVData() {
             console.error('Error fetching CSV data:', error);
         }
     }, [searchParams, parseCSV]);
+    */
+
+    const fetchCSVData = useCallback(async () => {
+        try {
+            const csvUrl = await getGoogleSheetURL(); // Get the appropriate URL
+            if (!csvUrl) {
+                console.error("No valid Google Sheet URL found.");
+                return;
+            }
+    
+            const response = await axios.get(csvUrl);
+            const parsedCsvData = parseCSV(response.data);
+    
+            const tags = new Set();
+            const types = new Set();
+    
+            parsedCsvData.forEach(item => {
+                if (item.Tags) {
+                    item.Tags.split(',').forEach(tag => tags.add(tag.trim()));
+                }
+                if (item.Type) {
+                    types.add(item.Type.trim());
+                }
+            });
+    
+            setUniqueTags(["All", ...Array.from(tags)]);
+            setUniqueTypes(["All", ...Array.from(types)]);
+            setCsvData(parsedCsvData);
+            setFilteredData(parsedCsvData);
+        } catch (error) {
+            console.error('Error fetching CSV data:', error);
+        }
+    }, [parseCSV]);
+    
 
     const handleFilter = (tag) => {
         setActiveTag(tag);
