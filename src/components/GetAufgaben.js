@@ -51,7 +51,7 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
     
-
+/*
     const getGoogleSheetURL = async () => {
         const params = new URLSearchParams(window.location.search);
         const user = params.get('user'); // Extract 'user' parameter from URL
@@ -62,7 +62,7 @@ export default function FetchCSVData() {
         }
         return null;
     };
-
+*/
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
