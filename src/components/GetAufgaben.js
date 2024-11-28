@@ -124,7 +124,7 @@ export default function FetchCSVData() {
             const shuffledData = publishedData.sort(() => Math.random() - 0.5);
     
             // Limit the number of records to 6
-            const limitedData = shuffledData.slice(0, 6);
+            const limitedData = shuffledData.slice(0, 40);
     
             const tags = new Set();
             const types = new Set();
@@ -233,10 +233,6 @@ export default function FetchCSVData() {
                     {userConfig.tagline}
                 </h2>
             )}
-
-
-
-
 
             {!selectedItem ? (
                 <>
