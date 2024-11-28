@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
-    const [loading, setLoading] = useState(true); // Track loading state
     const [filteredData, setFilteredData] = useState([]);
     const [uniqueTags, setUniqueTags] = useState([]);
     const [activeTag, setActiveTag] = useState("All");
@@ -52,6 +51,18 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
     
+/*
+    const getGoogleSheetURL = async () => {
+        const params = new URLSearchParams(window.location.search);
+        const user = params.get('user'); // Extract 'user' parameter from URL
+        const config = await fetchConfig();
+    
+        if (config) {
+            return config.users[user]?.url || config.default.url; // Fallback to default URL if user not found
+        }
+        return null;
+    };
+*/
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -101,11 +112,7 @@ export default function FetchCSVData() {
 
     const fetchCSVData = useCallback(async () => {
         try {
-            if (!userConfig) {
-                console.log("UserConfig not ready yet.");
-                return; // Wait until userConfig is set
-            }
-            console.log("Fetching CSV data...");
+            if (!userConfig) return; // Wait until userConfig is set
             const csvUrl = userConfig.url; // Get the URL from userConfig
             if (!csvUrl) {
                 console.error("No valid Google Sheet URL found.");
@@ -120,16 +127,10 @@ export default function FetchCSVData() {
                 item.Publish?.toLowerCase().includes("ok")
             );
     
-            // Shuffle the records
-            const shuffledData = publishedData.sort(() => Math.random() - 0.5);
-    
-            // Limit the number of records to 6
-            const limitedData = shuffledData.slice(0, 6);
-    
             const tags = new Set();
             const types = new Set();
     
-            limitedData.forEach(item => {
+            publishedData.forEach(item => {
                 if (item.Tags) {
                     item.Tags.split(',').forEach(tag => tags.add(tag.trim()));
                 }
@@ -140,15 +141,15 @@ export default function FetchCSVData() {
     
             setUniqueTags(["All", ...Array.from(tags).sort()]);
             setUniqueTypes(["All", ...Array.from(types).sort()]);
-            setCsvData(limitedData); // Use shuffled and limited data
-            setFilteredData(limitedData); // Initialize filtered data
+            setCsvData(publishedData); // Use filtered data
+            setFilteredData(publishedData); // Use filtered data
         } catch (error) {
             console.error('Error fetching CSV data:', error);
-        } finally {
-            setLoading(false); // Turn off loading state
         }
     }, [parseCSV, userConfig]);
     
+    
+
     const handleFilter = (tag) => {
         setActiveTag(tag);
         let filtered = csvData;
@@ -235,16 +236,6 @@ export default function FetchCSVData() {
                     {userConfig.tagline}
                 </h2>
             )}
-
-
-            {/*loading && 
-                <div className="flex flex-col items-center justify-center min-h-screen">
-                    <div className="loader animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500 mb-4"></div>
-                    <p className="text-center text-gray-700">Loading, please wait...</p>
-                </div>
-            */}
-
-
 
             {!selectedItem ? (
                 <>
@@ -336,7 +327,7 @@ export default function FetchCSVData() {
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
                         const audioKey = `Audio${index + 1}`;
-                        //console.log("Processed Caption:", pow(selectedItem[captionKey]));
+                        console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4">
                                 {selectedItem[imageKey] && (

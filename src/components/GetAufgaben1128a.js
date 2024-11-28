@@ -99,6 +99,47 @@ export default function FetchCSVData() {
         return data;
     }, [parseCSVRow]);
 
+    /*
+    const fetchCSVData = useCallback(async () => {
+        try {
+            if (!userConfig) return; // Wait until userConfig is set
+            const csvUrl = userConfig.url; // Get the URL from userConfig
+            if (!csvUrl) {
+                console.error("No valid Google Sheet URL found.");
+                return;
+            }
+    
+            const response = await axios.get(csvUrl);
+            const parsedCsvData = parseCSV(response.data);
+    
+            // Filter rows based on the "Publish" column
+            const publishedData = parsedCsvData.filter(item =>
+                item.Publish?.toLowerCase().includes("ok")
+            );
+    
+            const tags = new Set();
+            const types = new Set();
+    
+            publishedData.forEach(item => {
+                if (item.Tags) {
+                    item.Tags.split(',').forEach(tag => tags.add(tag.trim()));
+                }
+                if (item.Type) {
+                    types.add(item.Type.trim());
+                }
+            });
+    
+            setUniqueTags(["All", ...Array.from(tags).sort()]);
+            setUniqueTypes(["All", ...Array.from(types).sort()]);
+            setCsvData(publishedData); // Use filtered data
+            setFilteredData(publishedData); // Use filtered data
+        } catch (error) {
+            console.error('Error fetching CSV data:', error);
+        } finally {
+            setLoading(false); // Turn off loading state
+        }
+    }, [parseCSV, userConfig]);
+    */
     const fetchCSVData = useCallback(async () => {
         try {
             if (!userConfig) {
@@ -149,6 +190,8 @@ export default function FetchCSVData() {
         }
     }, [parseCSV, userConfig]);
     
+    
+
     const handleFilter = (tag) => {
         setActiveTag(tag);
         let filtered = csvData;
