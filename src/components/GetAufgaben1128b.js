@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
-    //const [loading, setLoading] = useState(true); // Track loading state
+    const [loading, setLoading] = useState(true); // Track loading state
     const [filteredData, setFilteredData] = useState([]);
     const [uniqueTags, setUniqueTags] = useState([]);
     const [activeTag, setActiveTag] = useState("All");
@@ -144,6 +144,8 @@ export default function FetchCSVData() {
             setFilteredData(limitedData); // Initialize filtered data
         } catch (error) {
             console.error('Error fetching CSV data:', error);
+        } finally {
+            setLoading(false); // Turn off loading state
         }
     }, [parseCSV, userConfig]);
     
@@ -236,8 +238,15 @@ export default function FetchCSVData() {
 
 
 
-
-
+        <div>
+        {loading && (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+                <div className="loader animate-spin rounded-full h-16 w-16 border-t-2 border-blue-500 mb-4"></div>
+                <p className="text-center text-gray-700">Loading, please wait...</p>
+            </div>
+        )}
+        {!loading && (
+            <div>
             {!selectedItem ? (
                 <>
                     {/* Types Section */}
@@ -398,6 +407,18 @@ export default function FetchCSVData() {
                     })}
                 </div>
             )}
+            {/* End !loading */}
+                    </div>
+                )}
+            </div>
+        );
+
+
+
+
+
+
+
                 {/* Footer */}
                 {userConfig && (
                 <footer className="mt-4 text-center text-sm text-gray-600">
