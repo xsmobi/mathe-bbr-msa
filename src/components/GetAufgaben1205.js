@@ -320,7 +320,6 @@ export default function FetchCSVData() {
                     />
                     {/* Render Images, Videos, Audio */}
                     {Array.from({ length: 10 }).map((_, index) => {
-                        const titleKey = `Title${index + 1}`;
                         const imageKey = `Image${index + 1}`;
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
@@ -328,14 +327,6 @@ export default function FetchCSVData() {
                         //console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4">
-                                {selectedItem[titleKey] && (
-                                    <div className="mb-4">
-                                        <h4
-                                            className="text-center leading-8 text-lg font-semibold text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[titleKey])) }}
-                                        />
-                                    </div>
-                                )}
                                 {selectedItem[imageKey] && (
                                     <div className="mb-4">
                                         <img
