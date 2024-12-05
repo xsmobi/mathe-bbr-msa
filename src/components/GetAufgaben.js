@@ -331,7 +331,7 @@ export default function FetchCSVData() {
                                 {selectedItem[titleKey] && (
                                     <div className="mb-4">
                                         <h4
-                                            className="text-center leading-8 text-lg font-semibold text-gray-900"
+                                            className="text-center leading-8 text-lg font-semibold text-gray-900 bg-slate-300"
                                             dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[titleKey])) }}
                                         />
                                     </div>
