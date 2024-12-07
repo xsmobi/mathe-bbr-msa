@@ -23,7 +23,9 @@ export default function FetchCSVData() {
 
     const textwithbr = (text) => {
         if (!text) return ""; // Handle null or undefined text
-        return text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
+        const result = text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
+        //console.log("Input:", text, "Output:", result); // Debug the transformation
+        return result;
     };
 
     const fetchConfig = async () => {
@@ -102,7 +104,7 @@ export default function FetchCSVData() {
     const fetchCSVData = useCallback(async () => {
         try {
             if (!userConfig) {
-                console.log("UserConfig not ready yet.");
+                //console.log("UserConfig not ready yet.");
                 return; // Wait until userConfig is set
             }
             //console.log("Fetching CSV data...");
@@ -314,7 +316,7 @@ export default function FetchCSVData() {
                         className="text-2xl mb-4"
                         dangerouslySetInnerHTML={{ __html: pow(selectedItem.Title) }}
                     />
-                    <h3 
+                    <h4 
                         className="text-xl text-slate-500 mb-4"
                         dangerouslySetInnerHTML={{ __html: pow(selectedItem.Description) }}
                     />
@@ -346,7 +348,7 @@ export default function FetchCSVData() {
                                         {selectedItem[captionKey] && (
                                         <p
                                             className="text-base text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: pow(selectedItem[captionKey]) }}
+                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
                                         />
                                         )}  
                                     </div>
