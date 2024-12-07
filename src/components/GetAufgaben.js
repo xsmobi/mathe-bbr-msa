@@ -105,7 +105,7 @@ export default function FetchCSVData() {
                 console.log("UserConfig not ready yet.");
                 return; // Wait until userConfig is set
             }
-            console.log("Fetching CSV data...");
+            //console.log("Fetching CSV data...");
             const csvUrl = userConfig.url; // Get the URL from userConfig
             if (!csvUrl) {
                 console.error("No valid Google Sheet URL found.");
@@ -329,7 +329,7 @@ export default function FetchCSVData() {
                         return (
                             <div key={index} className="mb-4">
                                 {selectedItem[titleKey] && (
-                                    <div className="mb-4">
+                                    <div className="mb-4 mt-12">
                                         <h4
                                             className="text-center leading-8 text-lg font-semibold text-gray-900 bg-slate-300"
                                             dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[titleKey])) }}
