@@ -355,32 +355,11 @@ export default function FetchCSVData() {
                                 )}
                                 {!selectedItem[imageKey] && selectedItem[captionKey] && (
                                     <div className="mb-4">
-                                    {selectedItem[captionKey].includes("++") ? (
-                                        <ul className="text-left list-none">
-                                            {selectedItem[captionKey]
-                                                .replace(/\+\+/g, "") // Remove "++" from the text
-                                                .split("//")
-                                                .map((line, idx) => (
-                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
-                                                ))}
-                                        </ul>
-                                    ) : selectedItem[captionKey].includes("**") ? (
-                                        <ul className="text-left list-square">
-                                            {selectedItem[captionKey]
-                                                .replace(/\*\*/g, "") // Remove "**" from the text
-                                                .split("//")
-                                                .map((line, idx) => (
-                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
-                                                ))}
-                                        </ul>
-                                    ) : (
                                         <p
                                             className="text-center leading-8 text-lg font-semibold text-gray-900"
                                             dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
-                                        ></p>
-                                    )}
+                                        />
                                     </div>
-
                                 )}
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">

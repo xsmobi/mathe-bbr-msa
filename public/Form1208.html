@@ -110,6 +110,12 @@
     </button>
     <input
       type="text"
+      id="Title1"
+      placeholder="Title1"
+      class="w-full p-2 border border-gray-300 rounded-md"
+    />
+    <input
+      type="text"
       id="Image1"
       placeholder="Image1"
       class="w-full p-2 border border-gray-300 rounded-md"
@@ -132,49 +138,61 @@
       placeholder="Caption1"
       class="w-full p-2 border border-gray-300 rounded-md"
     />
+
+    <input type="text" id="Title2" placeholder="Title2" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image2" placeholder="Image2" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video2" placeholder="Video2" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio2" placeholder="Audio2" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption2" placeholder="Caption2" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+
+    <input type="text" id="Title3" placeholder="Title3" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image3" placeholder="Image3" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video3" placeholder="Video3" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio3" placeholder="Audio3" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption3" placeholder="Caption3" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title4" placeholder="Title4" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image4" placeholder="Image4" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video4" placeholder="Video4" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio4" placeholder="Audio4" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption4" placeholder="Caption4" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title5" placeholder="Title5" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image5" placeholder="Image5" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video5" placeholder="Video5" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio5" placeholder="Audio5" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption5" placeholder="Caption5" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title6" placeholder="Title6" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image6" placeholder="Image6" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video6" placeholder="Video6" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio6" placeholder="Audio6" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption6" placeholder="Caption6" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title7" placeholder="Title7" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image7" placeholder="Image7" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video7" placeholder="Video7" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio7" placeholder="Audio7" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption7" placeholder="Caption7" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title8" placeholder="Title8" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image8" placeholder="Image8" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video8" placeholder="Video8" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio8" placeholder="Audio8" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption8" placeholder="Caption8" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title9" placeholder="Title9" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image9" placeholder="Image9" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video9" placeholder="Video9" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio9" placeholder="Audio9" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption9" placeholder="Caption9" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
 
+    <input type="text" id="Title10" placeholder="Title10" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Image10" placeholder="Image10" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Video10" placeholder="Video10" class="w-full p-2 border border-gray-300 rounded-md" />
     <input type="text" id="Audio10" placeholder="Audio10" class="w-full p-2 border border-gray-300 rounded-md" />
     <textarea id="Caption10" placeholder="Caption10" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+
     </form>
 
     <script>
@@ -215,11 +233,22 @@
 
       function searchRows() {
           const query = document.getElementById("searchQuery").value;
+
+          // Only perform the search if the query has more than 2 characters
+          if (query.length <= 2) {
+              const table = document.getElementById("searchResults");
+              const tbody = table.querySelector("tbody");
+              const thead = table.querySelector("thead");
+              tbody.innerHTML = ""; // Clear previous results
+              thead.style.display = "none"; // Hide header
+              return; // Exit the function
+          }
+
           googleScriptCall("searchRows", [query], (results) => {
               const table = document.getElementById("searchResults");
               const tbody = table.querySelector("tbody");
               const thead = table.querySelector("thead");
-              
+
               tbody.innerHTML = ""; // Clear previous results
 
               if (results.length === 0) {
@@ -228,8 +257,11 @@
               } else {
                   // Show the header if there are results
                   thead.style.display = "";
-                  results.forEach(row => {
+                  results.forEach((row, rowIndex) => {
                       const tr = document.createElement("tr");
+
+                      // Apply alternating row background for striping
+                      tr.className = rowIndex % 2 === 0 ? "bg-gray-100" : "bg-white";
 
                       // Display only "id" and "Title"
                       const fieldsToShow = [0, 2]; // Indices of "id" and "Title"
@@ -255,7 +287,7 @@
       }
 
       function populateForm(row) {
-          console.log("Populating form with row data:", row);
+          // console.log("Populating form with row data:", row);
           if (row.length < 10) {
               console.error("Row data is incomplete. Expected 10 elements:", row);
               return;
@@ -266,62 +298,82 @@
           document.getElementById("Description").value = row[3]; // Populate Description
           document.getElementById("Type").value = row[4]; // Populate Type
           document.getElementById("Tags").value = row[5]; // Populate Tags
-          document.getElementById("Image1").value = row[6]; // Populate Image1
-          document.getElementById("Video1").value = row[7]; // Populate Video1
-          document.getElementById("Audio1").value = row[8]; // Populate Audio1
-          document.getElementById("Caption1").value = row[9]; // Populate Caption1
-          document.getElementById("Image2").value = row[10]; // Image2
-          document.getElementById("Video2").value = row[11]; // Video2
-          document.getElementById("Audio2").value = row[12]; // Audio2
-          document.getElementById("Caption2").value = row[13]; // Caption2
-          document.getElementById("Image3").value = row[14]; // Image3
-          document.getElementById("Video3").value = row[15]; // Video3
-          document.getElementById("Audio3").value = row[16]; // Audio3
-          document.getElementById("Caption3").value = row[17]; // Caption3
-          document.getElementById("Image4").value = row[18]; // Image4
-          document.getElementById("Video4").value = row[19]; // Video4
-          document.getElementById("Audio4").value = row[20]; // Audio4
-          document.getElementById("Caption4").value = row[21]; // Caption4
-          document.getElementById("Image5").value = row[22]; // Image5
-          document.getElementById("Video5").value = row[23]; // Video5
-          document.getElementById("Audio5").value = row[24]; // Audio5
-          document.getElementById("Caption5").value = row[25]; // Caption5
-          document.getElementById("Image6").value = row[26]; // Image6
-          document.getElementById("Video6").value = row[27]; // Video6
-          document.getElementById("Audio6").value = row[28]; // Audio6
-          document.getElementById("Caption6").value = row[29]; // Caption6
-          document.getElementById("Image7").value = row[30]; // Image7
-          document.getElementById("Video7").value = row[31]; // Video7
-          document.getElementById("Audio7").value = row[32]; // Audio7
-          document.getElementById("Caption7").value = row[33]; // Caption7
-          document.getElementById("Image8").value = row[34]; // Image8
-          document.getElementById("Video8").value = row[35]; // Video8
-          document.getElementById("Audio8").value = row[36]; // Audio8
-          document.getElementById("Caption8").value = row[37]; // Caption8
-          document.getElementById("Image9").value = row[38]; // Image9
-          document.getElementById("Video9").value = row[39]; // Video9
-          document.getElementById("Audio9").value = row[40]; // Audio9
-          document.getElementById("Caption9").value = row[41]; // Caption9
-          document.getElementById("Image10").value = row[42]; // Image10
-          document.getElementById("Video10").value = row[43]; // Video10
-          document.getElementById("Audio10").value = row[44]; // Audio10
-          document.getElementById("Caption10").value = row[45]; // Caption10
+          // Media blocks with Titles
+          document.getElementById("Title1").value = row[6]; // Title1
+          document.getElementById("Image1").value = row[7]; // Image1
+          document.getElementById("Video1").value = row[8]; // Video1
+          document.getElementById("Audio1").value = row[9]; // Audio1
+          document.getElementById("Caption1").value = row[10]; // Caption1
+
+          document.getElementById("Title2").value = row[11]; // Title2
+          document.getElementById("Image2").value = row[12]; // Image2
+          document.getElementById("Video2").value = row[13]; // Video2
+          document.getElementById("Audio2").value = row[14]; // Audio2
+          document.getElementById("Caption2").value = row[15]; // Caption2
+
+          document.getElementById("Title3").value = row[16]; // Title3
+          document.getElementById("Image3").value = row[17]; // Image3
+          document.getElementById("Video3").value = row[18]; // Video3
+          document.getElementById("Audio3").value = row[19]; // Audio3
+          document.getElementById("Caption3").value = row[20]; // Caption3
+
+          document.getElementById("Title4").value = row[21]; // Title4
+          document.getElementById("Image4").value = row[22]; // Image4
+          document.getElementById("Video4").value = row[23]; // Video4
+          document.getElementById("Audio4").value = row[24]; // Audio4
+          document.getElementById("Caption4").value = row[25]; // Caption4
+
+          document.getElementById("Title5").value = row[26]; // Title5
+          document.getElementById("Image5").value = row[27]; // Image5
+          document.getElementById("Video5").value = row[28]; // Video5
+          document.getElementById("Audio5").value = row[29]; // Audio5
+          document.getElementById("Caption5").value = row[30]; // Caption5
+
+          document.getElementById("Title6").value = row[31]; // Title6
+          document.getElementById("Image6").value = row[32]; // Image6
+          document.getElementById("Video6").value = row[33]; // Video6
+          document.getElementById("Audio6").value = row[34]; // Audio6
+          document.getElementById("Caption6").value = row[35]; // Caption6
+
+          document.getElementById("Title7").value = row[36]; // Title7
+          document.getElementById("Image7").value = row[37]; // Image7
+          document.getElementById("Video7").value = row[38]; // Video7
+          document.getElementById("Audio7").value = row[39]; // Audio7
+          document.getElementById("Caption7").value = row[40]; // Caption7
+
+          document.getElementById("Title8").value = row[41]; // Title8
+          document.getElementById("Image8").value = row[42]; // Image8
+          document.getElementById("Video8").value = row[43]; // Video8
+          document.getElementById("Audio8").value = row[44]; // Audio8
+          document.getElementById("Caption8").value = row[45]; // Caption8
+
+          document.getElementById("Title9").value = row[46]; // Title9
+          document.getElementById("Image9").value = row[47]; // Image9
+          document.getElementById("Video9").value = row[48]; // Video9
+          document.getElementById("Audio9").value = row[49]; // Audio9
+          document.getElementById("Caption9").value = row[50]; // Caption9
+
+          document.getElementById("Title10").value = row[51]; // Title10
+          document.getElementById("Image10").value = row[52]; // Image10
+          document.getElementById("Video10").value = row[53]; // Video10
+          document.getElementById("Audio10").value = row[54]; // Audio10
+          document.getElementById("Caption10").value = row[55]; // Caption10          
       }
 
       function clearForm() {
           const fieldIds = [
               "id", "Publish", "Title", "Description",
               "Type", "Tags",
-              "Image1", "Video1", "Audio1", "Caption1",
-              "Image2", "Video2", "Audio2", "Caption2",
-              "Image3", "Video3", "Audio3", "Caption3",
-              "Image4", "Video4", "Audio4", "Caption4",
-              "Image5", "Video5", "Audio5", "Caption5",
-              "Image6", "Video6", "Audio6", "Caption6",
-              "Image7", "Video7", "Audio7", "Caption7",
-              "Image8", "Video8", "Audio8", "Caption8",
-              "Image9", "Video9", "Audio9", "Caption9",
-              "Image10", "Video10", "Audio10", "Caption10",
+              "Title1", "Image1", "Video1", "Audio1", "Caption1",
+              "Title2", "Image2", "Video2", "Audio2", "Caption2",
+              "Title3", "Image3", "Video3", "Audio3", "Caption3",
+              "Title4", "Image4", "Video4", "Audio4", "Caption4",
+              "Title5", "Image5", "Video5", "Audio5", "Caption5",
+              "Title6", "Image6", "Video6", "Audio6", "Caption6",
+              "Title7", "Image7", "Video7", "Audio7", "Caption7",
+              "Title8", "Image8", "Video8", "Audio8", "Caption8",
+              "Title9", "Image9", "Video9", "Audio9", "Caption9",
+              "Title10", "Image10", "Video10", "Audio10", "Caption10",
           ];
 
           fieldIds.forEach(id => {
@@ -340,22 +392,19 @@
           const fieldIds = [
               "Publish", "Title", "Description",
               "Type", "Tags",
-              "Image1", "Video1", "Audio1", "Caption1",
-              "Image2", "Video2", "Audio2", "Caption2",
-              "Image3", "Video3", "Audio3", "Caption3",
-              "Image4", "Video4", "Audio4", "Caption4",
-              "Image5", "Video5", "Audio5", "Caption5",
-              "Image6", "Video6", "Audio6", "Caption6",
-              "Image7", "Video7", "Audio7", "Caption7",
-              "Image8", "Video8", "Audio8", "Caption8",
-              "Image9", "Video9", "Audio9", "Caption9",
-              "Image10", "Video10", "Audio10", "Caption10",
+              "Title1", "Image1", "Video1", "Audio1", "Caption1",
+              "Title2", "Image2", "Video2", "Audio2", "Caption2",
+              "Title3", "Image3", "Video3", "Audio3", "Caption3",
+              "Title4", "Image4", "Video4", "Audio4", "Caption4",
+              "Title5", "Image5", "Video5", "Audio5", "Caption5",
+              "Title6", "Image6", "Video6", "Audio6", "Caption6",
+              "Title7", "Image7", "Video7", "Audio7", "Caption7",
+              "Title8", "Image8", "Video8", "Audio8", "Caption8",
+              "Title9", "Image9", "Video9", "Audio9", "Caption9",
+              "Title10", "Image10", "Video10", "Audio10", "Caption10",
           ];
           return fieldIds.map(id => document.getElementById(id).value);
       }
-
-
-
 
     </script>
   </body>
