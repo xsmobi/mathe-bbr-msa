@@ -42,7 +42,6 @@ export default function FetchCSVData() {
         }
     };
 
-    /*
     useEffect(() => {
         const loadUserConfig = async () => {
             const config = await fetchConfig(); // Fetch the full configuration JSON
@@ -51,30 +50,11 @@ export default function FetchCSVData() {
                 const user = searchParams.get('user'); // Get 'user' from URL parameters
                 console.log("User Parameter:", searchParams.get('user'));
                 const selectedConfig = config.users[user] || config.default; // Use user-specific or default config
-                console.log("Selected Config:", selectedConfig);
                 setUserConfig(selectedConfig); // Update the `userConfig` state
             }
         };
         loadUserConfig();
     }, [searchParams]);
-    */
-    useEffect(() => {
-        const loadUserConfig = async () => {
-            const config = await fetchConfig(); // Fetch the full configuration JSON
-            if (config) {
-                const user = searchParams.get('user'); // Get 'user' from URL parameters
-                const selectedConfig = user ? config.users[user] : config.default; // Explicitly check for user
-                if (!selectedConfig) {
-                    console.error("Default config not found in fetched configuration.");
-                }
-                setUserConfig(selectedConfig); // Update the `userConfig` state
-            } else {
-                console.error("Failed to fetch configuration.");
-            }
-        };
-        loadUserConfig();
-    }, [searchParams]);
-
     
     const parseCSVRow = useCallback((row) => {
         const result = [];
