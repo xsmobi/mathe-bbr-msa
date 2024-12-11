@@ -304,7 +304,7 @@ export default function FetchCSVData() {
                                     className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
                                     onClick={handleTitleClick}
                                 >
-                                    Aufgaben, Beispiele, Lösungen <small>(klick für neu mischen)</small>
+                                    {userConfig?.taskheader || "Task List"} <small>(click to shuffle)</small>
                                 </th>
                             </tr>
                         </thead>
