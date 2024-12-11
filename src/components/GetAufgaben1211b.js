@@ -23,7 +23,9 @@ export default function FetchCSVData() {
 
     const textwithbr = (text) => {
         if (!text) return ""; // Handle null or undefined text
-        return text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
+        const result = text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
+        //console.log("Input:", text, "Output:", result); // Debug the transformation
+        return result;
     };
 
     const fetchConfig = async () => {
@@ -40,17 +42,39 @@ export default function FetchCSVData() {
         }
     };
 
+    /*
     useEffect(() => {
         const loadUserConfig = async () => {
             const config = await fetchConfig(); // Fetch the full configuration JSON
+            console.log("Fetched Config:", config.default);
             if (config) {
                 const user = searchParams.get('user'); // Get 'user' from URL parameters
+                console.log("User Parameter:", searchParams.get('user'));
                 const selectedConfig = config.users[user] || config.default; // Use user-specific or default config
+                console.log("Selected Config:", selectedConfig);
                 setUserConfig(selectedConfig); // Update the `userConfig` state
             }
         };
         loadUserConfig();
     }, [searchParams]);
+    */
+    useEffect(() => {
+        const loadUserConfig = async () => {
+            const config = await fetchConfig(); // Fetch the full configuration JSON
+            if (config) {
+                const user = searchParams.get('user'); // Get 'user' from URL parameters
+                const selectedConfig = user ? config.users[user] : config.default; // Explicitly check for user
+                if (!selectedConfig) {
+                    console.error("Default config not found in fetched configuration.");
+                }
+                setUserConfig(selectedConfig); // Update the `userConfig` state
+            } else {
+                console.error("Failed to fetch configuration.");
+            }
+        };
+        loadUserConfig();
+    }, [searchParams]);
+
     
     const parseCSVRow = useCallback((row) => {
         const result = [];
@@ -102,10 +126,10 @@ export default function FetchCSVData() {
     const fetchCSVData = useCallback(async () => {
         try {
             if (!userConfig) {
-                console.log("UserConfig not ready yet.");
+                //console.log("UserConfig not ready yet.");
                 return; // Wait until userConfig is set
             }
-            console.log("Fetching CSV data...");
+            //console.log("Fetching CSV data...");
             const csvUrl = userConfig.url; // Get the URL from userConfig
             if (!csvUrl) {
                 console.error("No valid Google Sheet URL found.");
@@ -314,12 +338,13 @@ export default function FetchCSVData() {
                         className="text-2xl mb-4"
                         dangerouslySetInnerHTML={{ __html: pow(selectedItem.Title) }}
                     />
-                    <h3 
+                    <h4 
                         className="text-xl text-slate-500 mb-4"
                         dangerouslySetInnerHTML={{ __html: pow(selectedItem.Description) }}
                     />
                     {/* Render Images, Videos, Audio */}
                     {Array.from({ length: 10 }).map((_, index) => {
+                        const titleKey = `Title${index + 1}`;
                         const imageKey = `Image${index + 1}`;
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
@@ -327,6 +352,14 @@ export default function FetchCSVData() {
                         //console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4">
+                                {selectedItem[titleKey] && (
+                                    <div className="mb-4 mt-12">
+                                        <h4
+                                            className="text-center leading-8 text-lg font-semibold text-gray-900 bg-slate-300"
+                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[titleKey])) }}
+                                        />
+                                    </div>
+                                )}
                                 {selectedItem[imageKey] && (
                                     <div className="mb-4">
                                         <img
@@ -337,18 +370,39 @@ export default function FetchCSVData() {
                                         {selectedItem[captionKey] && (
                                         <p
                                             className="text-base text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: pow(selectedItem[captionKey]) }}
+                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
                                         />
                                         )}  
                                     </div>
                                 )}
                                 {!selectedItem[imageKey] && selectedItem[captionKey] && (
                                     <div className="mb-4">
+                                    {selectedItem[captionKey].includes("++") ? (
+                                        <ul className="text-left list-none">
+                                            {selectedItem[captionKey]
+                                                .replace(/\+\+/g, "") // Remove "++" from the text
+                                                .split("//")
+                                                .map((line, idx) => (
+                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
+                                                ))}
+                                        </ul>
+                                    ) : selectedItem[captionKey].includes("**") ? (
+                                        <ul className="text-left list-square">
+                                            {selectedItem[captionKey]
+                                                .replace(/\*\*/g, "") // Remove "**" from the text
+                                                .split("//")
+                                                .map((line, idx) => (
+                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
+                                                ))}
+                                        </ul>
+                                    ) : (
                                         <p
                                             className="text-center leading-8 text-lg font-semibold text-gray-900"
                                             dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
-                                        />
+                                        ></p>
+                                    )}
                                     </div>
+
                                 )}
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">
