@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 const styles = {
-    bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
-    //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
+    //bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
+    bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
   };
 
@@ -64,6 +64,16 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
 
+    /*
+    useEffect(() => {
+        // ... other logic ...
+        // Force re-render when userConfig changes
+        if (userConfig) {
+          console.log(1+1)
+        }
+      }, [userConfig]);
+    */
+    
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -230,9 +240,7 @@ export default function FetchCSVData() {
             {userConfig && (
                 <>
 
-        <div className={`${userConfig.background}`}>
-        {/*<div className={`${userConfig.background}`}>*/}
-            {/*<div className="h-screen w-screen p-4 bg-gradient-to-r from-[#00a884] to-[#00416d]">Test</div>*/}
+        <div className={`h-screen w-screen p-4 ${userConfig.background}`}>
             {/*console.log("background: " + userConfig.background)*/}
         <div className={styles.container}>
 
