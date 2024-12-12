@@ -1,80 +1,37 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
+
 const styles = {
-    //bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
     bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
-  };
+};
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
-    //const [loading, setLoading] = useState(true); // Track loading state
+    const [userConfig, setUserConfig] = useState(null);
+    const [isUserConfigLoading, setIsUserConfigLoading] = useState(true);
+    const [isCSVLoading, setIsCSVLoading] = useState(true);
+    const [loadingError, setLoadingError] = useState(null);
     const [filteredData, setFilteredData] = useState([]);
     const [uniqueTags, setUniqueTags] = useState([]);
     const [activeTag, setActiveTag] = useState("All");
     const [uniqueTypes, setUniqueTypes] = useState([]);
     const [activeType, setActiveType] = useState("All");
-    const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
-    const [userConfig, setUserConfig] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null);
     const [searchParams, setSearchParams] = useSearchParams();
-    //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
-
 
     const pow = (text) => {
-        if (!text) return ""; // Handle null or undefined text
+        if (!text) return "";
         return text.replace(/([a-zA-Z0-9]+)\^(-?[a-zA-Z0-9]+)/g, (_, base, exponent) => `${base}<sup>${exponent}</sup>`);
     };
 
     const textwithbr = (text) => {
-        if (!text) return ""; // Handle null or undefined text
-        const result = text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
-        //console.log("Input:", text, "Output:", result); // Debug the transformation
-        return result;
+        if (!text) return "";
+        return text.replace(/\/\//g, "<br />");
     };
 
-    const fetchConfig = async () => {
-        try {
-            const response = await fetch('https://xsmobi.github.io/mathe-bbr-msa-config/config.json');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const config = await response.json();
-            return config;
-        } catch (error) {
-            console.error("Error fetching configuration JSON:", error);
-            return null;
-        }
-    };
-
-    useEffect(() => {
-        const loadUserConfig = async () => {
-            const config = await fetchConfig(); // Fetch the full configuration JSON
-            if (config) {
-                const user = searchParams.get('user'); // Get 'user' from URL parameters
-                const selectedConfig = user ? config.users[user] : config.default; // Explicitly check for user
-                if (!selectedConfig) {
-                    console.error("Default config not found in fetched configuration.");
-                }
-                setUserConfig(selectedConfig); // Update the `userConfig` state
-            } else {
-                console.error("Failed to fetch configuration.");
-            }
-        };
-        loadUserConfig();
-    }, [searchParams]);
-
-    /*
-    useEffect(() => {
-        // ... other logic ...
-        // Force re-render when userConfig changes
-        if (userConfig) {
-          console.log(1+1)
-        }
-      }, [userConfig]);
-    */
-    
-    const parseCSVRow = useCallback((row) => {
+    const parseCSVRow = (row) => {
         const result = [];
         let currentField = '';
         let inQuotes = false;
@@ -83,7 +40,7 @@ export default function FetchCSVData() {
             const char = row[i];
 
             if (char === '"' && row[i - 1] !== '\\') {
-                inQuotes = !inQuotes; // Toggle inQuotes flag for quotes
+                inQuotes = !inQuotes;
             } else if (char === ',' && !inQuotes) {
                 result.push(currentField.trim());
                 currentField = '';
@@ -97,9 +54,9 @@ export default function FetchCSVData() {
         }
 
         return result;
-    }, []);
+    };
 
-    const parseCSV = useCallback((csvText) => {
+    const parseCSV = (csvText) => {
         if (!csvText) return [];
 
         const rows = csvText.split(/\r?\n/);
@@ -119,39 +76,26 @@ export default function FetchCSVData() {
             data.push(rowObject);
         }
         return data;
-    }, [parseCSVRow]);
+    };
 
     const fetchCSVData = useCallback(async () => {
         try {
-            if (!userConfig) {
-                //console.log("UserConfig not ready yet.");
-                return; // Wait until userConfig is set
-            }
-            //console.log("Fetching CSV data...");
-            const csvUrl = userConfig.url; // Get the URL from userConfig
-            if (!csvUrl) {
-                console.error("No valid Google Sheet URL found.");
-                return;
-            }
-    
-            const response = await axios.get(csvUrl);
+            if (!userConfig) return;
+
+            const response = await axios.get(userConfig.url);
             const parsedCsvData = parseCSV(response.data);
-    
-            // Filter rows based on the "Publish" column
+
             const publishedData = parsedCsvData.filter(item =>
-                item.Publish?.toLowerCase().includes("ok")
+                item.Publish?.toLowerCase().includes('ok')
             );
-    
-            // Shuffle the records
-            const shuffledData = publishedData.sort(() => Math.random() - 0.5);
-    
-            // Limit the number of records to 6
-            const limitedData = shuffledData.slice(0, 40);
-    
+
+            setCsvData(publishedData);
+            setFilteredData(publishedData);
+
             const tags = new Set();
             const types = new Set();
-    
-            limitedData.forEach(item => {
+
+            publishedData.forEach(item => {
                 if (item.Tags) {
                     item.Tags.split(',').forEach(tag => tags.add(tag.trim()));
                 }
@@ -159,20 +103,71 @@ export default function FetchCSVData() {
                     types.add(item.Type.trim());
                 }
             });
-    
+
             setUniqueTags(["All", ...Array.from(tags).sort()]);
             setUniqueTypes(["All", ...Array.from(types).sort()]);
-            setCsvData(limitedData); // Use shuffled and limited data
-            setFilteredData(limitedData); // Initialize filtered data
         } catch (error) {
-            console.error('Error fetching CSV data:', error);
+            setLoadingError('Failed to load CSV data.');
+            console.error(error);
+        } finally {
+            setIsCSVLoading(false);
         }
-    }, [parseCSV, userConfig]);
-    
+    }, [userConfig]);
+
+    const fetchConfig = async () => {
+        try {
+            const response = await fetch(
+                'https://xsmobi.github.io/mathe-bbr-msa-config/config.json'
+            );
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching configuration JSON:', error);
+            throw error;
+        }
+    };
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const config = await fetchConfig();
+                const user = searchParams.get('user');
+                const selectedConfig = user ? config.users[user] : config.default;
+
+                if (!selectedConfig) {
+                    throw new Error('User configuration not found.');
+                }
+
+                setUserConfig(selectedConfig);
+                setLoadingError(null); // Clear error state
+                await fetchCSVData();
+            } catch (error) {
+                setLoadingError('Failed to load data.');
+                console.error(error);
+            } finally {
+                setIsUserConfigLoading(false);
+            }
+        };
+
+        loadData();
+    }, [searchParams, fetchCSVData]);
+
+    useEffect(() => {
+        const taskId = searchParams.get('task');
+        if (taskId) {
+            const taskItem = csvData.find(item => item.id === taskId);
+            setSelectedItem(taskItem || null);
+        } else {
+            setSelectedItem(null);
+        }
+    }, [searchParams, csvData]);
+
     const handleFilter = (tag) => {
         setActiveTag(tag);
         let filtered = csvData;
-    
+
         if (tag !== "All") {
             filtered = filtered.filter(item =>
                 item.Tags?.split(',').map(tag => tag.trim()).includes(tag)
@@ -183,11 +178,11 @@ export default function FetchCSVData() {
         }
         setFilteredData(filtered);
     };
-    
+
     const handleTypeFilter = (type) => {
         setActiveType(type);
         let filtered = csvData;
-    
+
         if (activeTag !== "All") {
             filtered = filtered.filter(item =>
                 item.Tags?.split(',').map(tag => tag.trim()).includes(activeTag)
@@ -198,19 +193,19 @@ export default function FetchCSVData() {
         }
         setFilteredData(filtered);
     };
-    
+
     const handleRowClick = (item) => {
-        const user = searchParams.get('user'); // Retrieve the current 'user' parameter
-        const newParams = user ? { user, task: item.id } : { task: item.id }; // Retain 'user' if present
+        const user = searchParams.get('user');
+        const newParams = user ? { user, task: item.id } : { task: item.id };
         setSearchParams(newParams);
-        setSelectedItem(item); // Display the clicked item's profile
+        setSelectedItem(item);
     };
 
     const handleCloseProfile = () => {
-        const user = searchParams.get('user'); // Retrieve the current 'user' parameter
-        const newParams = user ? { user } : {}; // Retain only 'user' if present
+        const user = searchParams.get('user');
+        const newParams = user ? { user } : {};
         setSearchParams(newParams);
-        setSelectedItem(null); // Close the profile and show the list again
+        setSelectedItem(null);
     };
 
     const handleTitleClick = () => {
@@ -218,30 +213,27 @@ export default function FetchCSVData() {
         setFilteredData(shuffledData);
     };
 
-    useEffect(() => {
-        fetchCSVData();
-    }, [fetchCSVData]);
+    if (isUserConfigLoading || isCSVLoading) {
+        return (
+            <div className="loading-screen">
+                <div className="spinner"></div>
+                <p>Loading...</p>
+            </div>
+        );
+    }
 
-    useEffect(() => {
-        const taskId = searchParams.get('task');
-        if (taskId) {
-            const taskItem = csvData.find(item => item.id === taskId);
-            if (taskItem) setSelectedItem(taskItem);
-        } else {
-            setSelectedItem(null);
-        }
-    }, [searchParams, csvData]);
+    if (loadingError) {
+        return (
+            <div className="error-screen">
+                <p>{loadingError}</p>
+            </div>
+        );
+    }
 
     return (
+        <div className={userConfig?.background || 'default-bg'}>
 
-        
-    
-        <>
-            {userConfig && (
-                <>
-
-        <div className={`h-screen w-screen p-4 ${userConfig.background}`}>
-            {/*console.log("background: " + userConfig.background)*/}
+        <div className={styles.bg}>
         <div className={styles.container}>
 
 
@@ -472,15 +464,7 @@ export default function FetchCSVData() {
 
         </div>
         </div>
-        
-        
-                </>
-            )}
-        </>
 
-
-    
-
-
+        </div>  
     );
 }
