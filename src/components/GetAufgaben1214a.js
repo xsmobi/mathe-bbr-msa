@@ -369,12 +369,18 @@ export default function FetchCSVData() {
                                     <div className="mb-4">
                                         <img
                                             src={selectedItem[imageKey]}
-                                            alt={selectedItem[titleKey] || `Image ${index + 1}`}
+                                            alt={selectedItem[captionKey] || `Image ${index + 1}`}
                                             className="w-full h-auto mb-2 rounded"
                                         />
+                                        {selectedItem[captionKey] && (
+                                        <p
+                                            className="text-base text-gray-900"
+                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
+                                        />
+                                        )}  
                                     </div>
                                 )}
-                                {selectedItem[captionKey] && (
+                                {!selectedItem[imageKey] && selectedItem[captionKey] && (
                                     <div className="mb-4">
                                     {selectedItem[captionKey].includes("++") ? (
                                         <ul className="text-left list-none">
@@ -401,6 +407,7 @@ export default function FetchCSVData() {
                                         ></p>
                                     )}
                                     </div>
+
                                 )}
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">
