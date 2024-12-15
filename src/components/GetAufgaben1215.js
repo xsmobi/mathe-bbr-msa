@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 const styles = {
-    //bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
-    bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
+    bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
+    //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
   };
 
@@ -64,16 +64,6 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
 
-    /*
-    useEffect(() => {
-        // ... other logic ...
-        // Force re-render when userConfig changes
-        if (userConfig) {
-          console.log(1+1)
-        }
-      }, [userConfig]);
-    */
-    
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -240,7 +230,9 @@ export default function FetchCSVData() {
             {userConfig && (
                 <>
 
-        <div className={`h-screen w-screen p-4 ${userConfig.background}`}>
+        <div className={`${userConfig.background}`}>
+        {/*<div className={`${userConfig.background}`}>*/}
+            {/*<div className="h-screen w-screen p-4 bg-gradient-to-r from-[#00a884] to-[#00416d]">Test</div>*/}
             {/*console.log("background: " + userConfig.background)*/}
         <div className={styles.container}>
 
@@ -362,7 +354,7 @@ export default function FetchCSVData() {
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
                         const audioKey = `Audio${index + 1}`;
-                        //console.log("Processed Caption:", pow(selectedItem[captionKey]));
+                        console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4">
                                 {selectedItem[titleKey] && (
@@ -377,18 +369,12 @@ export default function FetchCSVData() {
                                     <div className="mb-4">
                                         <img
                                             src={selectedItem[imageKey]}
-                                            alt={selectedItem[captionKey] || `Image ${index + 1}`}
+                                            alt={selectedItem[titleKey] || `Image ${index + 1}`}
                                             className="w-full h-auto mb-2 rounded"
                                         />
-                                        {selectedItem[captionKey] && (
-                                        <p
-                                            className="text-base text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
-                                        />
-                                        )}  
                                     </div>
                                 )}
-                                {!selectedItem[imageKey] && selectedItem[captionKey] && (
+                                {selectedItem[captionKey] && (
                                     <div className="mb-4">
                                     {selectedItem[captionKey].includes("++") ? (
                                         <ul className="text-left list-none">
@@ -415,7 +401,6 @@ export default function FetchCSVData() {
                                         ></p>
                                     )}
                                     </div>
-
                                 )}
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">

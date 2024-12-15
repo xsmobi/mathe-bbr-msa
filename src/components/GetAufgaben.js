@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
+import MarkdownParser from "./MarkdownParser";
 const styles = {
     bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
     //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
@@ -64,16 +65,112 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
 
-    const parseCSVRow = useCallback((row) => {
+    /*
+    const parseCSV = useCallback((csvText) => {
+        if (!csvText) return [];
+        const rows = csvText.split(/\r?\n/); // Split text into lines
+        if (rows.length === 0) return [];
+        const headers = rows[0]?.split(",").map((header) => header.trim());
+        const data = [];
+        let currentRow = ""; // Accumulates rows that belong together
+        let insideQuotedField = false; // Track whether we are inside a quoted field
+        for (let i = 1; i < rows.length; i++) {
+            const line = rows[i];
+            // Check if line starts or ends a quoted field
+            const hasOpeningQuote = line.includes('"') && !insideQuotedField;
+            const hasClosingQuote = line.includes('"') && insideQuotedField;
+    
+            if (insideQuotedField) {
+                currentRow += `\n${line}`; // Add this line to the current record
+                if (hasClosingQuote) {
+                    // End of a multiline field
+                    insideQuotedField = false;
+                    const parsedRow = parseCSVRow(currentRow);
+                    if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+                    currentRow = "";
+                }
+            } else if (hasOpeningQuote && !hasClosingQuote) {
+                // Start of a multiline field
+                insideQuotedField = true;
+                currentRow = line;
+            } else {
+                // Normal row
+                const parsedRow = parseCSVRow(line);
+                if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+            }
+        }
+        // Handle any remaining data in currentRow
+        if (currentRow) {
+            const parsedRow = parseCSVRow(currentRow);
+            if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+        }
+        return data;
+    }, []);
+    */
+    const parseCSV = useCallback((csvText) => {
+        if (!csvText) return [];
+        const rows = csvText.split(/\r?\n/);
+        if (rows.length === 0) return [];
+        const headers = rows[0]?.split(",").map((header) => header.trim());
+        const data = [];
+        let currentRow = "";
+        let insideQuotedField = false;
+        let previousCharWasQuote = false;
+      
+        for (let i = 1; i < rows.length; i++) {
+          const line = rows[i];
+      
+          // Check for quote characters and their context
+          const hasOpeningQuote = line.includes('"') && !insideQuotedField && !previousCharWasQuote;
+          const hasClosingQuote = line.includes('"') && insideQuotedField && !previousCharWasQuote;
+      
+          // Update the previous character flag
+          previousCharWasQuote = line.endsWith('"');
+      
+          if (insideQuotedField) {
+            currentRow += `\n${line}`;
+            if (hasClosingQuote) {
+              insideQuotedField = false;
+              const parsedRow = parseCSVRow(currentRow);
+              if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+              currentRow = "";
+            }
+          } else if (hasOpeningQuote) {
+            insideQuotedField = true;
+            currentRow = line;
+          } else {
+            const parsedRow = parseCSVRow(line);
+            if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+          }
+        }
+      
+        // Handle any remaining data in currentRow
+        if (currentRow) {
+          const parsedRow = parseCSVRow(currentRow);
+          if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+        }
+      
+        return data;
+      }, []);
+
+
+
+
+
+
+
+    
+    // Helper function to parse a single CSV row into fields
+    const parseCSVRow = (row) => {
         const result = [];
         let currentField = '';
         let inQuotes = false;
-
+    
         for (let i = 0; i < row.length; i++) {
             const char = row[i];
-
+    
             if (char === '"' && row[i - 1] !== '\\') {
-                inQuotes = !inQuotes; // Toggle inQuotes flag for quotes
+                inQuotes = !inQuotes; // Toggle quotes state
             } else if (char === ',' && !inQuotes) {
                 result.push(currentField.trim());
                 currentField = '';
@@ -81,36 +178,28 @@ export default function FetchCSVData() {
                 currentField += char;
             }
         }
-
+    
         if (currentField) {
             result.push(currentField.trim());
         }
-
+    
         return result;
-    }, []);
-
-    const parseCSV = useCallback((csvText) => {
-        if (!csvText) return [];
-
-        const rows = csvText.split(/\r?\n/);
-        if (rows.length === 0) return [];
-
-        const headers = parseCSVRow(rows[0]);
-        const data = [];
-
-        for (let i = 1; i < rows.length; i++) {
-            const rowData = parseCSVRow(rows[i]);
-            if (!rowData || rowData.length === 0) continue;
-
-            const rowObject = {};
-            for (let j = 0; j < headers.length; j++) {
-                rowObject[headers[j]?.trim()] = rowData[j]?.trim() || "";
+    };
+    
+    // Helper function to create an object from headers and row data
+    const createRowObject = (headers, rowData) => {
+        const rowObject = {};
+        headers.forEach((header, index) => {
+            let value = rowData[index]?.trim() || "";
+            if (value.startsWith('"') && value.endsWith('"')) {
+                value = value.slice(1, -1).replace(/""/g, '"'); // Remove outer quotes and unescape inner quotes
             }
-            data.push(rowObject);
-        }
-        return data;
-    }, [parseCSVRow]);
-
+            value = value.replace(/\n/g, "<br />"); // Replace line breaks with <br /> for display
+            rowObject[header] = value;
+        });
+        return rowObject;
+    };
+    
     const fetchCSVData = useCallback(async () => {
         try {
             if (!userConfig) {
@@ -124,6 +213,10 @@ export default function FetchCSVData() {
                 return;
             }
     
+            // Add a cache-busting query parameter
+            //csvUrl += `?nocache=${new Date().getTime()}`;
+
+
             const response = await axios.get(csvUrl);
             const parsedCsvData = parseCSV(response.data);
     
@@ -158,6 +251,8 @@ export default function FetchCSVData() {
             console.error('Error fetching CSV data:', error);
         }
     }, [parseCSV, userConfig]);
+    
+
     
     const handleFilter = (tag) => {
         setActiveTag(tag);
@@ -374,34 +469,15 @@ export default function FetchCSVData() {
                                         />
                                     </div>
                                 )}
+                                
                                 {selectedItem[captionKey] && (
-                                    <div className="mb-4">
-                                    {selectedItem[captionKey].includes("++") ? (
-                                        <ul className="text-left list-none">
-                                            {selectedItem[captionKey]
-                                                .replace(/\+\+/g, "") // Remove "++" from the text
-                                                .split("//")
-                                                .map((line, idx) => (
-                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
-                                                ))}
-                                        </ul>
-                                    ) : selectedItem[captionKey].includes("**") ? (
-                                        <ul className="text-left list-square">
-                                            {selectedItem[captionKey]
-                                                .replace(/\*\*/g, "") // Remove "**" from the text
-                                                .split("//")
-                                                .map((line, idx) => (
-                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
-                                                ))}
-                                        </ul>
-                                    ) : (
-                                        <p
-                                            className="text-center leading-8 text-lg font-semibold text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
-                                        ></p>
-                                    )}
-                                    </div>
-                                )}
+                                <div className="mb-4">
+                                    <MarkdownParser text={selectedItem[captionKey]} />
+                                </div>
+                                )}                                
+                                {selectedItem[captionKey] && console.log(selectedItem[captionKey])}
+
+
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">
                                         <video controls className="w-full rounded-md">

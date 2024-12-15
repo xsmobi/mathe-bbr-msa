@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
+import MarkdownParser from "./MarkdownParser";
+const styles = {
+    bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
+    //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
+    container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
+  };
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
@@ -45,17 +51,20 @@ export default function FetchCSVData() {
     useEffect(() => {
         const loadUserConfig = async () => {
             const config = await fetchConfig(); // Fetch the full configuration JSON
-            console.log("Fetched Config:", config.default);
             if (config) {
                 const user = searchParams.get('user'); // Get 'user' from URL parameters
-                console.log("User Parameter:", searchParams.get('user'));
-                const selectedConfig = config.users[user] || config.default; // Use user-specific or default config
+                const selectedConfig = user ? config.users[user] : config.default; // Explicitly check for user
+                if (!selectedConfig) {
+                    console.error("Default config not found in fetched configuration.");
+                }
                 setUserConfig(selectedConfig); // Update the `userConfig` state
+            } else {
+                console.error("Failed to fetch configuration.");
             }
         };
         loadUserConfig();
     }, [searchParams]);
-    
+
     const parseCSVRow = useCallback((row) => {
         const result = [];
         let currentField = '';
@@ -215,11 +224,26 @@ export default function FetchCSVData() {
     }, [searchParams, csvData]);
 
     return (
+
+        
+    
+        <>
+            {userConfig && (
+                <>
+
+        <div className={`${userConfig.background}`}>
+        {/*<div className={`${userConfig.background}`}>*/}
+            {/*<div className="h-screen w-screen p-4 bg-gradient-to-r from-[#00a884] to-[#00416d]">Test</div>*/}
+            {/*console.log("background: " + userConfig.background)*/}
+        <div className={styles.container}>
+
+
         <div className="overflow-x-auto">
+            
             {/* Header */}
             {userConfig && (
                 <header className="relative flex items-center justify-between mb-4">
-                    <h1 className="text-3xl font-bold text-blue-500">
+                    <h1 className="text-3xl font-bold text-blue-500" style={{ color: userConfig.titlecolor || 'blue' }}>
                         {userConfig.title}
                     </h1>
                     {userConfig.logo && (
@@ -270,8 +294,10 @@ export default function FetchCSVData() {
                                     onClick={() => handleFilter(tag)}
                                     className={`${
                                         activeTag === tag
-                                            ? "bg-blue-700 text-white"
-                                            : "bg-blue-500 hover:bg-blue-700 text-white"
+                                            //? "bg-blue-700 text-white"
+                                            //: "bg-blue-500 hover:bg-blue-700 text-white"
+                                            ? "bg-zinc-700 text-white"
+                                            : "bg-zinc-500 hover:bg-green-700 text-white"
                                     } font-bold py-1 px-2 rounded-full text-xs`}
                                 >
                                     {tag}
@@ -283,12 +309,12 @@ export default function FetchCSVData() {
                     {/* Table Section */}
                     <table className="min-w-full table-auto border-collapse border border-gray-200">
                         <thead>
-                            <tr className="bg-blue-500 text-white">
+                            <tr className="bg-zinc-500 text-white">
                                 <th
                                     className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
                                     onClick={handleTitleClick}
                                 >
-                                    Aufgaben, Beispiele, Lösungen <small>(klick für neu mischen)</small>
+                                    {userConfig?.taskheader || "Task List"} <small>(click to shuffle)</small>
                                 </th>
                             </tr>
                         </thead>
@@ -329,7 +355,7 @@ export default function FetchCSVData() {
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
                         const audioKey = `Audio${index + 1}`;
-                        //console.log("Processed Caption:", pow(selectedItem[captionKey]));
+                        console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4">
                                 {selectedItem[titleKey] && (
@@ -344,46 +370,20 @@ export default function FetchCSVData() {
                                     <div className="mb-4">
                                         <img
                                             src={selectedItem[imageKey]}
-                                            alt={selectedItem[captionKey] || `Image ${index + 1}`}
+                                            alt={selectedItem[titleKey] || `Image ${index + 1}`}
                                             className="w-full h-auto mb-2 rounded"
                                         />
-                                        {selectedItem[captionKey] && (
-                                        <p
-                                            className="text-base text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
-                                        />
-                                        )}  
                                     </div>
                                 )}
-                                {!selectedItem[imageKey] && selectedItem[captionKey] && (
-                                    <div className="mb-4">
-                                    {selectedItem[captionKey].includes("++") ? (
-                                        <ul className="text-left list-none">
-                                            {selectedItem[captionKey]
-                                                .replace(/\+\+/g, "") // Remove "++" from the text
-                                                .split("//")
-                                                .map((line, idx) => (
-                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
-                                                ))}
-                                        </ul>
-                                    ) : selectedItem[captionKey].includes("**") ? (
-                                        <ul className="text-left list-square">
-                                            {selectedItem[captionKey]
-                                                .replace(/\*\*/g, "") // Remove "**" from the text
-                                                .split("//")
-                                                .map((line, idx) => (
-                                                    <li key={idx} dangerouslySetInnerHTML={{ __html: textwithbr(pow(line)) }}></li>
-                                                ))}
-                                        </ul>
-                                    ) : (
-                                        <p
-                                            className="text-center leading-8 text-lg font-semibold text-gray-900"
-                                            dangerouslySetInnerHTML={{ __html: textwithbr(pow(selectedItem[captionKey])) }}
-                                        ></p>
-                                    )}
-                                    </div>
+                                
+                                {selectedItem[captionKey] && (
+                                <div className="mb-4">
+                                    <MarkdownParser text={selectedItem[captionKey]} />
+                                </div>
+                                )}                                
+                                {selectedItem[captionKey] && console.log(selectedItem[captionKey])}
 
-                                )}
+
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">
                                         <video controls className="w-full rounded-md">
@@ -435,5 +435,19 @@ export default function FetchCSVData() {
                 </footer>
             )}
         </div>
+
+
+        </div>
+        </div>
+        
+        
+                </>
+            )}
+        </>
+
+
+    
+
+
     );
 }
