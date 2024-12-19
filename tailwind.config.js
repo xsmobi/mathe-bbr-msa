@@ -13,11 +13,7 @@ module.exports = {
       square: 'square',
       roman: 'upper-roman',
     },
-
-
-
-
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography'),],
 }
 

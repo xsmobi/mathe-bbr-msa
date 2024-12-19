@@ -326,7 +326,7 @@ export default function FetchCSVData() {
                         const audioKey = `Audio${index + 1}`;
                         //console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
-                            <div key={index} className="mb-4">
+                            <div key={index} className="mb-4 prose">
                                 {selectedItem[titleKey] && (
                                     <div className="mb-4 mt-12">
                                         <h4
