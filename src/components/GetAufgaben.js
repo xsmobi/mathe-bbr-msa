@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import MarkdownParser from "./MarkdownParser";
 const styles = {
@@ -65,126 +65,35 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
 
-
-    const parseCSV = useCallback((csvText) => {
-        if (!csvText) return [];
-        const rows = csvText.split(/\r?\n/);
-        if (rows.length === 0) return [];
-        const headers = rows[0]?.split(",").map((header) => header.trim());
-        const data = [];
-        let currentRow = "";
-        let insideQuotedField = false;
-        let previousCharWasQuote = false;
-      
-        for (let i = 1; i < rows.length; i++) {
-          const line = rows[i];
-      
-          // Check for quote characters and their context
-          const hasOpeningQuote = line.includes('"') && !insideQuotedField && !previousCharWasQuote;
-          const hasClosingQuote = line.includes('"') && insideQuotedField && !previousCharWasQuote;
-      
-          // Update the previous character flag
-          previousCharWasQuote = line.endsWith('"');
-      
-          if (insideQuotedField) {
-            currentRow += `\n${line}`;
-            if (hasClosingQuote) {
-              insideQuotedField = false;
-              const parsedRow = parseCSVRow(currentRow);
-              if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
-              currentRow = "";
-            }
-          } else if (hasOpeningQuote) {
-            insideQuotedField = true;
-            currentRow = line;
-          } else {
-            const parsedRow = parseCSVRow(line);
-            if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
-          }
-        }
-      
-        // Handle any remaining data in currentRow
-        if (currentRow) {
-          const parsedRow = parseCSVRow(currentRow);
-          if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
-        }
-      
-        return data;
-      }, []);
-
-    // Helper function to parse a single CSV row into fields
-    const parseCSVRow = (row) => {
-        const result = [];
-        let currentField = '';
-        let inQuotes = false;
-    
-        for (let i = 0; i < row.length; i++) {
-            const char = row[i];
-    
-            if (char === '"' && row[i - 1] !== '\\') {
-                inQuotes = !inQuotes; // Toggle quotes state
-            } else if (char === ',' && !inQuotes) {
-                result.push(currentField.trim());
-                currentField = '';
-            } else {
-                currentField += char;
-            }
-        }
-    
-        if (currentField) {
-            result.push(currentField.trim());
-        }
-    
-        return result;
-    };
-    
-    // Helper function to create an object from headers and row data
-    const createRowObject = (headers, rowData) => {
-        const rowObject = {};
-        headers.forEach((header, index) => {
-            let value = rowData[index]?.trim() || "";
-            if (value.startsWith('"') && value.endsWith('"')) {
-                value = value.slice(1, -1).replace(/""/g, '"'); // Remove outer quotes and unescape inner quotes
-            }
-            value = value.replace(/\n/g, "<br />"); // Replace line breaks with <br /> for display
-            rowObject[header] = value;
-        });
-        return rowObject;
-    };
+    //const appsScriptUrl = "https://script.google.com/macros/s/AKfycbyzA5Ly5TBy-ITSqwrL4kJDmz6hgooh6qFjCLSV-Oi6xoBbghHfAlnRctJ5f-TmOw6wFA/exec?type=api"
+    //const appsScriptUrl = "https://script.google.com/macros/s/AKfycbwEPO_lLY182Umdg4QPV4AkWZcjyd1UpO4Ww8gtcs8osT7xz1EyYsPcq31TYeFfJKw6/exec?type=api"
+    //const appsScriptUrl = "https://script.google.com/macros/s/AKfycbyYYxmp_seUig0YOLTfFqaI902accksW9bEZy9hADG2UKogb1FvBw8tm0EUUI6WGaEN3A/exec?type=api"
+    //const appsScriptUrl = "https://script.google.com/macros/s/AKfycbyAgR6gOivQlb-msYwPyki1IgS07njmFFUOA68hbr7cYmRjrk9MAdVDlKL8TSJyfXcwCQ/exec?type=api"
+    const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzWb5FF0kMz64OFPEI2XPcNk_DUf7KHkjr2jdYw3Fe_vwu0PP7jYiwh53QdoncYNXjDng/exec?type=api"
     
     const fetchCSVData = useCallback(async () => {
         try {
-            if (!userConfig) {
-                //console.log("UserConfig not ready yet.");
-                return; // Wait until userConfig is set
+            const response = await fetch(appsScriptUrl);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-            //console.log("Fetching CSV data...");
-            const csvUrl = userConfig.url; // Get the URL from userConfig
-            if (!csvUrl) {
-                console.error("No valid Google Sheet URL found.");
-                return;
-            }
-    
-            // Add a cache-busting query parameter
-            //csvUrl += `?nocache=${new Date().getTime()}`;
+            const sanitizedData = await response.json();
+            console.log(sanitizedData)
 
-            const response = await axios.get(csvUrl);
-            const parsedCsvData = parseCSV(response.data);
-    
-            // Filter rows based on the "Publish" column
-            const publishedData = parsedCsvData.filter(item =>
+            // Filter rows based on the "Publish" column (now done on client-side)
+            const publishedData = sanitizedData.filter(item =>
                 item.Publish?.toLowerCase().includes("ok")
             );
-    
+
             // Shuffle the records
             const shuffledData = publishedData.sort(() => Math.random() - 0.5);
-    
-            // Limit the number of records to 6
+
+            // Limit the number of records
             const limitedData = shuffledData.slice(0, 40);
-    
+
             const tags = new Set();
             const types = new Set();
-    
+
             limitedData.forEach(item => {
                 if (item.Tags) {
                     item.Tags.split(',').forEach(tag => tags.add(tag.trim()));
@@ -193,15 +102,31 @@ export default function FetchCSVData() {
                     types.add(item.Type.trim());
                 }
             });
-    
+
             setUniqueTags(["All", ...Array.from(tags).sort()]);
             setUniqueTypes(["All", ...Array.from(types).sort()]);
-            setCsvData(limitedData); // Use shuffled and limited data
-            setFilteredData(limitedData); // Initialize filtered data
+            setCsvData(limitedData);
+            setFilteredData(limitedData);
         } catch (error) {
-            console.error('Error fetching CSV data:', error);
+            console.error('Error fetching data:', error);
         }
-    }, [parseCSV, userConfig]);
+    }, [appsScriptUrl]); // Add appsScriptUrl to the dependency array
+
+    /*
+    useEffect(() => {
+        if (userConfig.url) {
+            fetchCSVData();
+        }
+    }, [fetchCSVData, userConfig]);
+    */
+    useEffect(() => {
+        if (userConfig && userConfig.url) { // Safely check userConfig and its properties
+            fetchCSVData();
+        }
+    }, [fetchCSVData, userConfig]);
+
+
+
     
 
     const handleFilter = (tag) => {

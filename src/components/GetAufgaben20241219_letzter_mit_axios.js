@@ -65,50 +65,53 @@ export default function FetchCSVData() {
         loadUserConfig();
     }, [searchParams]);
 
-    
+
     const parseCSV = useCallback((csvText) => {
         if (!csvText) return [];
-        const rows = csvText.split(/\r?\n/); // Split text into lines
+        const rows = csvText.split(/\r?\n/);
         if (rows.length === 0) return [];
         const headers = rows[0]?.split(",").map((header) => header.trim());
         const data = [];
-        let currentRow = ""; // Accumulates rows that belong together
-        let insideQuotedField = false; // Track whether we are inside a quoted field
+        let currentRow = "";
+        let insideQuotedField = false;
+        let previousCharWasQuote = false;
+      
         for (let i = 1; i < rows.length; i++) {
-            const line = rows[i];
-            // Check if line starts or ends a quoted field
-            const hasOpeningQuote = line.includes('"') && !insideQuotedField;
-            const hasClosingQuote = line.includes('"') && insideQuotedField;
-    
-            if (insideQuotedField) {
-                currentRow += `\n${line}`; // Add this line to the current record
-                if (hasClosingQuote) {
-                    // End of a multiline field
-                    insideQuotedField = false;
-                    const parsedRow = parseCSVRow(currentRow);
-                    if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
-                    currentRow = "";
-                }
-            } else if (hasOpeningQuote && !hasClosingQuote) {
-                // Start of a multiline field
-                insideQuotedField = true;
-                currentRow = line;
-            } else {
-                // Normal row
-                const parsedRow = parseCSVRow(line);
-                if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+          const line = rows[i];
+      
+          // Check for quote characters and their context
+          const hasOpeningQuote = line.includes('"') && !insideQuotedField && !previousCharWasQuote;
+          const hasClosingQuote = line.includes('"') && insideQuotedField && !previousCharWasQuote;
+      
+          // Update the previous character flag
+          previousCharWasQuote = line.endsWith('"');
+      
+          if (insideQuotedField) {
+            currentRow += `\n${line}`;
+            if (hasClosingQuote) {
+              insideQuotedField = false;
+              const parsedRow = parseCSVRow(currentRow);
+              if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+              currentRow = "";
             }
+          } else if (hasOpeningQuote) {
+            insideQuotedField = true;
+            currentRow = line;
+          } else {
+            const parsedRow = parseCSVRow(line);
+            if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+          }
         }
+      
         // Handle any remaining data in currentRow
         if (currentRow) {
-            const parsedRow = parseCSVRow(currentRow);
-            if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
+          const parsedRow = parseCSVRow(currentRow);
+          if (parsedRow.length > 0) data.push(createRowObject(headers, parsedRow));
         }
+      
         return data;
-    }, []);
-    
-    
-    
+      }, []);
+
     // Helper function to parse a single CSV row into fields
     const parseCSVRow = (row) => {
         const result = [];
@@ -165,7 +168,6 @@ export default function FetchCSVData() {
             // Add a cache-busting query parameter
             //csvUrl += `?nocache=${new Date().getTime()}`;
 
-
             const response = await axios.get(csvUrl);
             const parsedCsvData = parseCSV(response.data);
     
@@ -202,7 +204,6 @@ export default function FetchCSVData() {
     }, [parseCSV, userConfig]);
     
 
-    
     const handleFilter = (tag) => {
         setActiveTag(tag);
         let filtered = csvData;
@@ -398,7 +399,7 @@ export default function FetchCSVData() {
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
                         const audioKey = `Audio${index + 1}`;
-                        console.log("Processed Caption:", pow(selectedItem[captionKey]));
+                        //console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4">
                                 {selectedItem[titleKey] && (
@@ -424,7 +425,7 @@ export default function FetchCSVData() {
                                     <MarkdownParser text={selectedItem[captionKey]} />
                                 </div>
                                 )}                                
-                                {selectedItem[captionKey] && console.log(selectedItem[captionKey])}
+                                {/*selectedItem[captionKey] && console.log(selectedItem[captionKey])*/}
 
 
                                 {selectedItem[videoKey] && (
