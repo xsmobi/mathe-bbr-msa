@@ -78,7 +78,7 @@ export default function FetchCSVData() {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const sanitizedData = await response.json();
-            console.log(sanitizedData)
+            //console.log(sanitizedData)
 
             // Filter rows based on the "Publish" column (now done on client-side)
             const publishedData = sanitizedData.filter(item =>
@@ -109,6 +109,8 @@ export default function FetchCSVData() {
             setFilteredData(limitedData);
         } catch (error) {
             console.error('Error fetching data:', error);
+        //} finally {
+        //   setLoading(false); // Set loading to false after fetching data
         }
     }, [appsScriptUrl]); // Add appsScriptUrl to the dependency array
 
@@ -193,11 +195,12 @@ export default function FetchCSVData() {
     }, [searchParams, csvData]);
 
     return (
-
-        
-    
         <>
-            {userConfig && (
+
+        {/* https://chatgpt.com/share/67658180-fb5c-800e-a1a1-0977f5470b88 */}
+
+
+        {userConfig && (
                 <>
 
         <div className={`${userConfig.background}`}>
