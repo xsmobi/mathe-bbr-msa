@@ -4,31 +4,72 @@ const MarkdownParser = ({ text }) => {
   const parseMarkdown = (input) => {
     if (!input) return "";
 
-    // Repair unmatched '**', '*', '__', '_'
-    const repairedText = input
-      .replace(/(\*\*[^*]*)(?!\*\*)/g, "$1**")
-      .replace(/(\*[^*]*)(?!\*)/g, "$1*")
-      .replace(/(__[^_]*)(?!__)/g, "$1__")
-      .replace(/(_[^_]*)(?!_)/g, "$1_");
+    // Regular expressions for different Markdown elements
+    const headerRegex = /^#+(?=\s)/;
+    //const listRegex = /^(\d+\.|\-|\+)\s/;
+    const listRegex = /^(\d+\.|-|\+)\s/;
+    const blockquoteRegex = /^>\s/;
 
-    // Handle bold (** and __)
-    let html = repairedText.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/__(.*?)__/g, "<strong>$1</strong>");
+    // Split the input into lines
+    const lines = input.split(/\r?\n/);
 
-    // Handle italic (* and _)
-    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>").replace(/_(.*?)_/g, "<em>$1</em>");
+    let currentBlock = "";
+    let html = "";
 
-    // Handle line breaks and paragraphs
-    html = html
-      .split(/\r?\n\r?\n/) // Split into paragraphs (double line breaks)
-      .map((paragraph) => 
-        paragraph
-          .split(/\r?\n/) // Handle single line breaks within a paragraph
-          .map((line) => line.trim())
-          .filter((line) => line) // Remove empty lines
-          .join("<br />") // Replace single line breaks with <br>
-      )
-      .map((paragraph) => `<p>${paragraph}</p>`) // Wrap paragraphs in <p>
-      .join(""); // Join paragraphs without extra line breaks
+    for (const line of lines) {
+      // Handle headers
+      const headerMatch = line.match(headerRegex);
+      if (headerMatch) {
+        const level = headerMatch[0].length;
+        html += `<h${level}>${line.slice(level).trim()}</h${level}>`;
+        continue;
+      }
+
+      // Handle lists
+      const listMatch = line.match(listRegex);
+      if (listMatch) {
+        if (!currentBlock || currentBlock !== "list") {
+          currentBlock = "list";
+          html += "<ul>";
+        }
+        const item = line.slice(listMatch[0].length).trim();
+        html += `<li>${item}</li>`;
+        continue;
+      }
+
+      // Handle blockquotes
+      const blockquoteMatch = line.match(blockquoteRegex);
+      if (blockquoteMatch) {
+        if (!currentBlock || currentBlock !== "blockquote") {
+          currentBlock = "blockquote";
+          html += "<blockquote>";
+        }
+        html += `<p>${line.slice(1).trim()}</p>`;
+        continue;
+      }
+
+      // Handle paragraphs and inline formatting
+      if (currentBlock) {
+        html += `${line}<br>`;
+      } else {
+        // Handle bold, italic, and line breaks within paragraphs
+        html += `<p>${line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/__(.*?)__/g, "<strong>$1</strong>")
+          .replace(/\*(.*?)\*/g, "<em>$1</em>")
+          .replace(/_(.*?)_/g, "<em>$1</em>")
+          .replace(/\r?\n/, "<br />")}</p>`;
+      }
+
+      // End current block if necessary
+      if (currentBlock && !line.trim()) {
+        if (currentBlock === "list") {
+          html += "</ul>";
+        } else if (currentBlock === "blockquote") {
+          html += "</blockquote>";
+        }
+        currentBlock = "";
+      }
+    }
 
     return html;
   };
