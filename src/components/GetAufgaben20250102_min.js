@@ -6,32 +6,7 @@ const styles = {
     bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
     //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
-};
-const sprueche=
-[
-    { "text": "Bereit für den Mathe-Boost?", "style": "text-2xl font-bold text-blue-500" },
-    { "text": "Entdecke neue Wege, Mathe zu verstehen!", "style": "text-xl font-medium text-green-400" },
-    { "text": "Mathe macht Spaß! Versprochen.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Löse knifflige Aufgaben und erweitere dein Wissen.", "style": "text-lg text-white bg-gray-900 p-2 rounded" },
-    { "text": "Werde zum Mathe-Profi!", "style": "text-2xl font-bold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Mathe ist die Sprache der Welt.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Überwinde deine Mathe-Ängste!", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" },
-    { "text": "Trainiere dein Gehirn mit Mathe-Rätseln.", "style": "text-lg text-gray-100 bg-gray-700 p-2 rounded" },
-    { "text": "Mathe öffnet Türen zu vielen Berufen.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Lerne mit Freude und Leichtigkeit.", "style": "text-lg text-gray-100 bg-gray-900 p-2 rounded" },
-    { "text": "Du schaffst das! Glaube an dich!", "style": "text-xl font-bold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Entdecke die Schönheit der Mathematik.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Jedes Problem hat eine Lösung.", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" }, 
-    { "text": "Lerne mit Spaß und Motivation.", "style": "text-lg text-gray-100 bg-gray-700 p-2 rounded" },
-    { "text": "Bereite dich erfolgreich auf deine Prüfungen vor.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Erweitere deinen Horizont mit Mathe.", "style": "text-lg text-gray-100 bg-gray-900 p-2 rounded" },
-    { "text": "Mathe ist überall im Alltag.", "style": "text-xl font-semibold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Entwickle logisches Denken und Problemlösungsfähigkeiten.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Sei neugierig und entdecke die faszinierende Welt der Zahlen.", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" }
-  ]
-
-
-
+  };
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
@@ -44,28 +19,19 @@ export default function FetchCSVData() {
     const [userConfig, setUserConfig] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // Combined loading state
     const [searchParams, setSearchParams] = useSearchParams();
-    //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
-
-    const [currentQuote, setCurrentQuote] = useState(0);
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-          setCurrentQuote((prevQuote) => (prevQuote + 1) % sprueche.length);
-        }, 750); // Millisekunden
-      
-        return () => clearInterval(intervalId);
-    }, []);
 
     const pow = (text) => {
         if (!text) return ""; // Handle null or undefined text
         return text.replace(/([a-zA-Z0-9]+)\^(-?[a-zA-Z0-9]+)/g, (_, base, exponent) => `${base}<sup>${exponent}</sup>`);
     };
 
+    /*
     const textwithbr = (text) => {
         if (!text) return ""; // Handle null or undefined text
         const result = text.replace(/\/\//g, "<br />"); // Replace all instances of // with <br />
-        //console.log("Input:", text, "Output:", result); // Debug the transformation
         return result;
     };
+    */
 
     const fetchConfig = async () => {
         try {
@@ -94,14 +60,14 @@ export default function FetchCSVData() {
             } else {
                 console.error("Failed to fetch configuration.");
             }
-            //setIsLoading(false); // Set loading to false here // 20240102 weg! Das war das Rerender problem
+            setIsLoading(false); // Set loading to false here
         };
         loadUserConfig();
     }, [searchParams]); // [searchParams muss!]
     //}); // Empty array ensures this runs only once
 
     const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzWb5FF0kMz64OFPEI2XPcNk_DUf7KHkjr2jdYw3Fe_vwu0PP7jYiwh53QdoncYNXjDng/exec?type=api"
-    
+
     const fetchCSVData = useCallback(async () => {
         try {
             const response = await fetch(appsScriptUrl);
@@ -124,14 +90,6 @@ export default function FetchCSVData() {
             setUniqueTypes(["All", ...Array.from(types).sort()]);
             setCsvData(limitedData);
             setFilteredData(limitedData);
-            /*
-            setCsvData(() => {
-                setUniqueTags(["All", ...Array.from(tags).sort()]);
-                setUniqueTypes(["All", ...Array.from(types).sort()]);
-                setFilteredData(limitedData);
-                return limitedData; // Return value for setCsvData
-            });
-            */
             setIsLoading(false); // Ensure loading state is updated here
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -210,14 +168,10 @@ export default function FetchCSVData() {
         }
     }, [searchParams, csvData]);
 
-    //console.log(isLoading)
-
     if (isLoading) {
         return (
-            <div id="motivational-quote" className="text-center">
-                <p className={sprueche[currentQuote].style}>
-                   {sprueche[currentQuote].text}
-                </p>
+            <div className="flex items-center justify-center h-screen">
+                <p>Loading application...</p>
             </div>
         );
     }
@@ -265,8 +219,8 @@ export default function FetchCSVData() {
             {!selectedItem ? (
                 <>
                     {/* Types Section */}
+                    {/*
                     <div className="mb-4">
-                        {/*<h3 className="text-xl font-bold mb-2">Types</h3>*/}
                         <div className="flex flex-wrap gap-2">
                             {uniqueTypes.map((type, index) => (
                                 <button
@@ -283,10 +237,11 @@ export default function FetchCSVData() {
                             ))}
                         </div>
                     </div>
+                    */}
 
                     {/* Tags Section */}
+                    {/*
                     <div className="mb-4">
-                        {/*<h3 className="text-xl font-bold mb-2">Tags</h3>*/}
                         <div className="flex flex-wrap gap-2">
                             {uniqueTags.map((tag, index) => (
                                 <button
@@ -305,6 +260,7 @@ export default function FetchCSVData() {
                             ))}
                         </div>
                     </div>
+                    */}
 
                     {/* Table Section */}
                     {!isLoading && userConfig && filteredData.length > 0 && (
@@ -351,13 +307,13 @@ export default function FetchCSVData() {
                         dangerouslySetInnerHTML={{ __html: pow(selectedItem.Description) }}
                     />
                     {/* Render Images, Videos, Audio */}
+                    {/*
                     {Array.from({ length: 10 }).map((_, index) => {
                         const titleKey = `Title${index + 1}`;
                         const imageKey = `Image${index + 1}`;
                         const captionKey = `Caption${index + 1}`;
                         const videoKey = `Video${index + 1}`;
                         const audioKey = `Audio${index + 1}`;
-                        //console.log("Processed Caption:", pow(selectedItem[captionKey]));
                         return (
                             <div key={index} className="mb-4 prose">
                                 {selectedItem[titleKey] && (
@@ -383,8 +339,6 @@ export default function FetchCSVData() {
                                     <MarkdownParser text={selectedItem[captionKey]} />
                                 </div>
                                 )}                                
-                                {/*selectedItem[captionKey] && console.log(selectedItem[captionKey])*/}
-
 
                                 {selectedItem[videoKey] && (
                                     <div className="mb-4">
@@ -405,8 +359,10 @@ export default function FetchCSVData() {
                             </div>
                         );
                     })}
+                    */}
 
                     {/* Render Links */}
+                    {/* 
                     {Array.from({ length: 3 }).map((_, index) => {
                         const linkKey = `Link${index + 1}`;
                         const urlKey = `url${index + 1}`;
@@ -428,6 +384,7 @@ export default function FetchCSVData() {
 
                         return null;
                     })}
+                    */}
                 </div>
             )}
                 {/* Footer */}
@@ -446,10 +403,6 @@ export default function FetchCSVData() {
                 </>
             )}
         </>
-
-
-    
-
 
     ); // /return
 }

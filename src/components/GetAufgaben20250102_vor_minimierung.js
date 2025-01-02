@@ -6,32 +6,7 @@ const styles = {
     bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
     //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
-};
-const sprueche=
-[
-    { "text": "Bereit für den Mathe-Boost?", "style": "text-2xl font-bold text-blue-500" },
-    { "text": "Entdecke neue Wege, Mathe zu verstehen!", "style": "text-xl font-medium text-green-400" },
-    { "text": "Mathe macht Spaß! Versprochen.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Löse knifflige Aufgaben und erweitere dein Wissen.", "style": "text-lg text-white bg-gray-900 p-2 rounded" },
-    { "text": "Werde zum Mathe-Profi!", "style": "text-2xl font-bold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Mathe ist die Sprache der Welt.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Überwinde deine Mathe-Ängste!", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" },
-    { "text": "Trainiere dein Gehirn mit Mathe-Rätseln.", "style": "text-lg text-gray-100 bg-gray-700 p-2 rounded" },
-    { "text": "Mathe öffnet Türen zu vielen Berufen.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Lerne mit Freude und Leichtigkeit.", "style": "text-lg text-gray-100 bg-gray-900 p-2 rounded" },
-    { "text": "Du schaffst das! Glaube an dich!", "style": "text-xl font-bold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Entdecke die Schönheit der Mathematik.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Jedes Problem hat eine Lösung.", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" }, 
-    { "text": "Lerne mit Spaß und Motivation.", "style": "text-lg text-gray-100 bg-gray-700 p-2 rounded" },
-    { "text": "Bereite dich erfolgreich auf deine Prüfungen vor.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Erweitere deinen Horizont mit Mathe.", "style": "text-lg text-gray-100 bg-gray-900 p-2 rounded" },
-    { "text": "Mathe ist überall im Alltag.", "style": "text-xl font-semibold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Entwickle logisches Denken und Problemlösungsfähigkeiten.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Sei neugierig und entdecke die faszinierende Welt der Zahlen.", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" }
-  ]
-
-
-
+  };
 
 export default function FetchCSVData() {
     const [csvData, setCsvData] = useState([]);
@@ -45,15 +20,6 @@ export default function FetchCSVData() {
     const [isLoading, setIsLoading] = useState(true); // Combined loading state
     const [searchParams, setSearchParams] = useSearchParams();
     //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
-
-    const [currentQuote, setCurrentQuote] = useState(0);
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-          setCurrentQuote((prevQuote) => (prevQuote + 1) % sprueche.length);
-        }, 750); // Millisekunden
-      
-        return () => clearInterval(intervalId);
-    }, []);
 
     const pow = (text) => {
         if (!text) return ""; // Handle null or undefined text
@@ -94,7 +60,7 @@ export default function FetchCSVData() {
             } else {
                 console.error("Failed to fetch configuration.");
             }
-            //setIsLoading(false); // Set loading to false here // 20240102 weg! Das war das Rerender problem
+            setIsLoading(false); // Set loading to false here
         };
         loadUserConfig();
     }, [searchParams]); // [searchParams muss!]
@@ -139,13 +105,11 @@ export default function FetchCSVData() {
         }
     }, [appsScriptUrl]); // Add appsScriptUrl to the dependency array
 
-    /*
     useEffect(() => {
         if (userConfig && userConfig.url) { // Safely check userConfig and its properties
             fetchCSVData();
         }
     }, [fetchCSVData, userConfig]); // [fetchCSVData] muss
-    */
 
     const handleFilter = (tag) => {
         setActiveTag(tag);
@@ -210,14 +174,10 @@ export default function FetchCSVData() {
         }
     }, [searchParams, csvData]);
 
-    //console.log(isLoading)
-
     if (isLoading) {
         return (
-            <div id="motivational-quote" className="text-center">
-                <p className={sprueche[currentQuote].style}>
-                   {sprueche[currentQuote].text}
-                </p>
+            <div className="flex items-center justify-center h-screen">
+                <p>Loading application...</p>
             </div>
         );
     }
