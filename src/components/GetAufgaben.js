@@ -7,30 +7,22 @@ const styles = {
     //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
 };
+
 const sprueche=
 [
-    { "text": "Bereit für den Mathe-Boost?", "style": "text-2xl font-bold text-blue-500" },
-    { "text": "Entdecke neue Wege, Mathe zu verstehen!", "style": "text-xl font-medium text-green-400" },
-    { "text": "Mathe macht Spaß! Versprochen.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Löse knifflige Aufgaben und erweitere dein Wissen.", "style": "text-lg text-white bg-gray-900 p-2 rounded" },
-    { "text": "Werde zum Mathe-Profi!", "style": "text-2xl font-bold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Mathe ist die Sprache der Welt.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Überwinde deine Mathe-Ängste!", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" },
-    { "text": "Trainiere dein Gehirn mit Mathe-Rätseln.", "style": "text-lg text-gray-100 bg-gray-700 p-2 rounded" },
-    { "text": "Mathe öffnet Türen zu vielen Berufen.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Lerne mit Freude und Leichtigkeit.", "style": "text-lg text-gray-100 bg-gray-900 p-2 rounded" },
-    { "text": "Du schaffst das! Glaube an dich!", "style": "text-xl font-bold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Entdecke die Schönheit der Mathematik.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Jedes Problem hat eine Lösung.", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" }, 
-    { "text": "Lerne mit Spaß und Motivation.", "style": "text-lg text-gray-100 bg-gray-700 p-2 rounded" },
-    { "text": "Bereite dich erfolgreich auf deine Prüfungen vor.", "style": "text-xl font-semibold text-white bg-gray-800 p-2 rounded" },
-    { "text": "Erweitere deinen Horizont mit Mathe.", "style": "text-lg text-gray-100 bg-gray-900 p-2 rounded" },
-    { "text": "Mathe ist überall im Alltag.", "style": "text-xl font-semibold text-white bg-gray-700 p-2 rounded" },
-    { "text": "Entwickle logisches Denken und Problemlösungsfähigkeiten.", "style": "text-lg text-gray-100 bg-gray-800 p-2 rounded" },
-    { "text": "Sei neugierig und entdecke die faszinierende Welt der Zahlen.", "style": "text-xl font-semibold text-white bg-gray-900 p-2 rounded" }
+    { "text": "Bereit für den Mathe-Boost? Starte jetzt und mach jeden Tag 1 Aufgabe & 1 Basics & 1 Beispiel" },
+    { "text": "Ausfall beim BBR ist uncool. Bereite dich Ausfall-sicher vor, du kannst es!" },
+    { "text": "Keiner muss beim BBR einen Ausfall haben. Erfolg liegt in deiner Hand - mit dieser App"},
+    { "text": "Klick auf den Tag BASICS und verbessere heute deine Grundlagen" },
+    { "text": "Mathe GR-Kurs? Hol dir im zweiten Halbjahr den ER-Kurs!" },
+    { "text": "Klicke auf AUFGABEN und hol dir jeden Tag eine Aufgabe mit Lösung" },
+    { "text": "Hol dir eine Aufgabe mit Lösung und rechne sie in der Klasse vor - nimm dein Telefon mit dieser App zur Hilfe!" },
+    { "text": "Trainiere dein Gehirn mit Kopfrechnen" },
+    { "text": "Mathe öffnet Türen zu vielen Berufen!" },
+    { "text": "Lerne mit Freude und Leichtigkeit." },
+    { "text": "Du schaffst die Prüfung! Glaube an dich! Aber nicht nur: du musst auch arbeiten"},
+    { "text": "Entdecke, dass Mathe Spaß machen kann. Du musst nur eine Aufgabe richtig gut können und damit angeben!" },
   ]
-
-
 
 
 export default function FetchCSVData() {
@@ -211,7 +203,7 @@ export default function FetchCSVData() {
     }, [searchParams, csvData]);
 
     //console.log(isLoading)
-
+    /*
     if (isLoading) {
         return (
             <div id="motivational-quote" className="text-center">
@@ -221,7 +213,7 @@ export default function FetchCSVData() {
             </div>
         );
     }
-
+    */
     return (
         <>
 
@@ -305,6 +297,22 @@ export default function FetchCSVData() {
                             ))}
                         </div>
                     </div>
+
+                    {/*isLoading && (
+                        <div id="motivational-quote" className="text-center">
+                        <p className={sprueche[currentQuote].style}>
+                        {sprueche[currentQuote].text}
+                        </p>
+                    </div>
+                    )*/}
+                    {isLoading && (
+                        <div id="motivational-quote" className="prose prose-2xl max-w-none">
+                        <p>
+                            <span>"{sprueche[currentQuote].text}"</span> 
+                            <span className="text-sm text-gray-400">— {sprueche[currentQuote].author}</span>
+                        </p>
+                        </div>
+                    )}
 
                     {/* Table Section */}
                     {!isLoading && userConfig && filteredData.length > 0 && (
