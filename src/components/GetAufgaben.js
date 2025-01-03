@@ -11,16 +11,21 @@ const styles = {
 const sprueche=
 [
     { "text": "Bereit für den Mathe-Boost? Starte jetzt und mach jeden Tag 1 Aufgabe & 1 Basics & 1 Beispiel" },
-    { "text": "Ausfall beim BBR ist uncool. Bereite dich Ausfall-sicher vor, du kannst es!" },
-    { "text": "Keiner muss beim BBR einen Ausfall haben. Erfolg liegt in deiner Hand - mit dieser App"},
-    { "text": "Klick auf den Tag BASICS und verbessere heute deine Grundlagen" },
+    { "text": "mathe-bbr-msa.app begleitet den Matheunterricht in der Mittelstufe und ist eine Hilfe für Schüler, Lehrer und Eltern." },
+    { "text": "Ausfall beim BBR ist uncool. Bereite dich Ausfall-sicher vor, du kannst es! Jede/r kann die 5 vermeiden!" },
+    { "text": "Keiner muss beim BBR einen Ausfall haben. Erfolg liegt in deiner Hand - mit dieser App: mache Original-BBR-Aufgaben, schaue dir Demos und Beispiele an, sichere dein Grundwissen."},
+    { "text": "Klick auf den Tag BASICS und verbessere heute deine Grundlagen." },
     { "text": "Mathe GR-Kurs? Hol dir im zweiten Halbjahr den ER-Kurs!" },
     { "text": "Klicke auf AUFGABEN und hol dir jeden Tag eine Aufgabe mit Lösung" },
     { "text": "Hol dir eine Aufgabe mit Lösung und rechne sie in der Klasse vor - nimm dein Telefon mit dieser App zur Hilfe!" },
     { "text": "Trainiere dein Gehirn mit Kopfrechnen" },
-    { "text": "Mathe öffnet Türen zu vielen Berufen!" },
-    { "text": "Lerne mit Freude und Leichtigkeit." },
-    { "text": "Du schaffst die Prüfung! Glaube an dich! Aber nicht nur: du musst auch arbeiten"},
+    { "text": "Bei der Vorbereitung für den Mittleren Schulabschluss müssen alle Mathe-Themen der Mittelstufe wiederholt und immer wieder am Basis-Können der Grundschule festgemacht werden." },
+    { "text": "Lerne mit Freude und Leichtigkeit. Lieber kurz und konzentriert als stundenlang und abgelenkt!" },
+    { "text": "Du schaffst die MSA-Prüfung! Glaube an dich! Aber nicht nur glauben: du musst auch arbeiten"},
+    { "text": "mathe-bbr-msa.app bietet einen Pool aus über 500 Aufgaben mit Lösungen, Anwendungsbeispielen und Lehrinhalten"},
+    { "text": "mathe-bbr-msa.app bietet Textaufgaben aus den großen Mathethemen wie Lineare Funktionen, Lineare Gleichungssysteme oder Sinussatz, die in jeder Mittelschulabschlussprüfung vorkommen."},
+    { "text": "In mathe-bbr-msa.app findest du Basisaufgaben, die dein Mathe-Grundverständnis testen. Du wiederholst die Grundlagen immer wieder neu."},
+    { "text": "Grundlagen-Themen sind Proportionalität, Maßeinheiten, oder auch Umrechnungsaufgaben der Physik."},
     { "text": "Entdecke, dass Mathe Spaß machen kann. Du musst nur eine Aufgabe richtig gut können und damit angeben!" },
   ]
 
@@ -38,13 +43,30 @@ export default function FetchCSVData() {
     const [searchParams, setSearchParams] = useSearchParams();
     //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
 
+    /*
     const [currentQuote, setCurrentQuote] = useState(0);
     useEffect(() => {
         const intervalId = setInterval(() => {
           setCurrentQuote((prevQuote) => (prevQuote + 1) % sprueche.length);
-        }, 750); // Millisekunden
-      
+        }, 1800); // Millisekunden
         return () => clearInterval(intervalId);
+    }, []);
+    */
+    const [currentQuote, setCurrentQuote] = useState(0);
+    const [shuffledSprueche, setShuffledSprueche] = useState([]);
+    
+    useEffect(() => {
+      // Shuffle the array on mount
+      const shuffledArray = [...sprueche].sort(() => Math.random() - 0.5);
+      setShuffledSprueche(shuffledArray);
+    
+      // Set up the interval to change quotes
+      const intervalId = setInterval(() => {
+        setCurrentQuote((prevQuote) => (prevQuote + 1) % shuffledArray.length);
+      }, 1800);
+    
+      // Cleanup the interval on unmount
+      return () => clearInterval(intervalId);
     }, []);
 
     const pow = (text) => {
@@ -72,7 +94,7 @@ export default function FetchCSVData() {
             return null;
         }
     };
-
+    
     useEffect(() => {
         const loadUserConfig = async () => {
             const config = await fetchConfig(); // Fetch the full configuration JSON
@@ -90,8 +112,8 @@ export default function FetchCSVData() {
         };
         loadUserConfig();
     }, [searchParams]); // [searchParams muss!]
-    //}); // Empty array ensures this runs only once
-
+    
+ 
     const appsScriptUrl = "https://script.google.com/macros/s/AKfycbzWb5FF0kMz64OFPEI2XPcNk_DUf7KHkjr2jdYw3Fe_vwu0PP7jYiwh53QdoncYNXjDng/exec?type=api"
     
     const fetchCSVData = useCallback(async () => {
@@ -116,14 +138,6 @@ export default function FetchCSVData() {
             setUniqueTypes(["All", ...Array.from(types).sort()]);
             setCsvData(limitedData);
             setFilteredData(limitedData);
-            /*
-            setCsvData(() => {
-                setUniqueTags(["All", ...Array.from(tags).sort()]);
-                setUniqueTypes(["All", ...Array.from(types).sort()]);
-                setFilteredData(limitedData);
-                return limitedData; // Return value for setCsvData
-            });
-            */
             setIsLoading(false); // Ensure loading state is updated here
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -202,23 +216,8 @@ export default function FetchCSVData() {
         }
     }, [searchParams, csvData]);
 
-    //console.log(isLoading)
-    /*
-    if (isLoading) {
-        return (
-            <div id="motivational-quote" className="text-center">
-                <p className={sprueche[currentQuote].style}>
-                   {sprueche[currentQuote].text}
-                </p>
-            </div>
-        );
-    }
-    */
     return (
         <>
-
-        {/* https://chatgpt.com/share/67658180-fb5c-800e-a1a1-0977f5470b88 */}
-
 
         {userConfig && (
                 <>
@@ -257,6 +256,7 @@ export default function FetchCSVData() {
             {!selectedItem ? (
                 <>
                     {/* Types Section */}
+                    
                     <div className="mb-4">
                         {/*<h3 className="text-xl font-bold mb-2">Types</h3>*/}
                         <div className="flex flex-wrap gap-2">
@@ -275,7 +275,7 @@ export default function FetchCSVData() {
                             ))}
                         </div>
                     </div>
-
+                    
                     {/* Tags Section */}
                     <div className="mb-4">
                         {/*<h3 className="text-xl font-bold mb-2">Tags</h3>*/}
@@ -308,8 +308,8 @@ export default function FetchCSVData() {
                     {isLoading && (
                         <div id="motivational-quote" className="prose prose-2xl max-w-none">
                         <p>
-                            <span>"{sprueche[currentQuote].text}"</span> 
-                            <span className="text-sm text-gray-400">— {sprueche[currentQuote].author}</span>
+                            <span>"{shuffledSprueche[currentQuote].text}"</span> 
+                            {/*<span className="text-sm text-gray-400">— {sprueche[currentQuote].author}</span>*/}
                         </p>
                         </div>
                     )}
@@ -323,7 +323,10 @@ export default function FetchCSVData() {
                                     className="border border-gray-300 px-4 py-2 text-left cursor-pointer"
                                     onClick={handleTitleClick}
                                 >
-                                    {userConfig?.taskheader || "Task List"} <small>(click to shuffle)</small>
+                                    {userConfig?.taskheader || "Task List"}
+                                    <button class="bg-gray-700 hover:bg-gray-500 text-white font-bold mx-2 py-0 px-4 rounded-full">
+                                        shuffle
+                                    </button>
                                 </th>
                             </tr>
                         </thead>
@@ -446,18 +449,12 @@ export default function FetchCSVData() {
             )}
         </div>
 
-
         </div>
         </div>
-        
         
                 </>
             )}
         </>
-
-
-    
-
 
     ); // /return
 }
