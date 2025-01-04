@@ -509,7 +509,7 @@ export default function FetchCSVData() {
                 {userConfig && (
                 <footer className="mt-4 text-center text-sm text-gray-600">
                     {/*<p>{userConfig.company}</p>*/}
-                    &copy; <a href="https://www.linkedin.com/in/internetpartnership" target="_blank" nofollow>Dr. Eckard Ritter,</a> Lehrer für Mathematik und Physik an der Wolfgang-Borchert-Schule, Berlin-Spandau
+                    &copy; <a href="https://www.linkedin.com/in/internetpartnership" target="_blank" rel="noopener noreferrer">Dr. Eckard Ritter,</a> Lehrer für Mathematik und Physik an der Wolfgang-Borchert-Schule, Berlin-Spandau
                 </footer>
             )}
         </div>
