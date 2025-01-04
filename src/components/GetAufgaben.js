@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 //import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import MarkdownParser from "./MarkdownParser";
@@ -7,7 +8,7 @@ const styles = {
     //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
     container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
 };
-
+/*
 const sprueche=
 [
     { "text": "Bereit für den Mathe-Boost? Starte jetzt und mach jeden Tag 1 Aufgabe & 1 Basics & 1 Beispiel" },
@@ -28,6 +29,21 @@ const sprueche=
     { "text": "Grundlagen-Themen sind Proportionalität, Maßeinheiten, oder auch Umrechnungsaufgaben der Physik."},
     { "text": "Entdecke, dass Mathe Spaß machen kann. Du musst nur eine Aufgabe richtig gut können und damit angeben!" },
   ]
+*/
+  const sprueche=
+    [
+        { "text": "AUFGABEN ist einer von  4 Typen von Mathe-Helfern: AUFGABEN, BASICS, DEMO, LERNEN. Mit AUFGABEN erhältst du echte Prüfungsaufgaben aus Original-BBR- oder MSA-Prüfungen. Mit originalgetreuen BBR- und MSA-Aufgaben bereitest du dich optimal auf deine Matheprüfung vor." },
+        { "text": "Finde mit AUFGABEN deine Stärken und Schwächen heraus und löse Probleme gezielt, z.B. mit dem Typ BASICS, denn oft ist fehlendes Basis-Können aus der Grundschule das Problem." },      
+        { "text": "BASICS ist einer von 4 Typen von Mathe-Helfern: AUFGABEN, BASICS, DEMO, LERNEN. Mache in deiner BBR- oder MSA-Vorbereitung immer wieder (am besten jeden Tag) eine Einheit BASICS. Sichere dir solide Grundlage." },
+        { "text": "Denke daran, dass die “Basis-Aufgaben” in einer MSA-/BBR-Prüfung etwa ein Fünftel der erreichbaren Punkte ausmachen! Ein Großteil der Ausfälle hätte verhindert werden können durch eine höhere Quote bei den Basisaufaben. Beispiel: 80% statt 50%, das sind 3 Punkte und die entscheiden oft über Sein oder Nichtsein." },
+        { "text": "DEMO oder auch “Showcase”  einer von 4 Typen von Mathe-Helfern: AUFGABEN, BASICS, DEMO, LERNEN und  bringt Mathe zum Anfassen, denn Mathematik ist mehr als nur trockene Theorie! In unseren Demos/Showcases zeigen wir dir Anwendungsbeispiele, wie du mathematische Regeln und Gesetze im Alltag anwenden kannst - oder auch in anderen Fächern wie Physik." },
+        { "text": "LERNEN ist einer von 4 Typen von Mathe-Helfern: AUFGABEN, BASICS, DEMO, LERNEN. Hier bringt mathe-bbr-msa.app individuelle Lernpfade. Denn jede/r lernt anders! Vielfältige Lerneinheiten bieten dir die Möglichkeit, Mathematik ganz nach deinem eigenen Tempo und Lernstil zu erarbeiten. Mal so, wie du es schon in der Schule hattest und mal erfrischend anders." },
+        { "text": "Mit der Mathe-App mathe-bbr-msa.app erhältst du alles, was du für eine erfolgreiche Vorbereitung auf deine MSA- oder BBR-Prüfung benötigst! Praxisnahe Aufgaben: Trainiere mit realistischen Prüfungsaufgaben. Solide Grundlagen: Schließe Wissenslücken und baue dein mathematisches Verständnis auf. Anschauliche Beispiele: Verstehe Zusammenhänge durch praktische Anwendungen. Flexible Lernformate: Passe dein Lernen an deine individuellen Bedürfnisse an." },
+        { "text": "Entdecke, dass Mathe Spaß machen kann. Du musst nur EINE Aufgabe richtig gut können, um damit angeben und dein Image beim Lehrer zu steigern!" },
+        { "text": "mathe-bbr-msa.app bietet Textaufgaben aus den großen Mathethemen wie Lineare Funktionen, Lineare Gleichungssysteme oder Sinussatz, die in jeder Mittelschulabschlussprüfung vorkommen."},
+        { "text": "In mathe-bbr-msa.app findest du Basisaufgaben, die dein Mathe-Grundverständnis testen. Du wiederholst die Grundlagen immer wieder neu."},
+        { "text": "Bereit für den Mathe-Boost? Starte jetzt und mach jeden Tag 1 Aufgabe & 1 Demo & 1 Basics & 1 Lerneinheit" },
+    ]
 
 
 export default function FetchCSVData() {
@@ -218,9 +234,57 @@ export default function FetchCSVData() {
 
     return (
         <>
+            <Helmet>
+                <title>
+                {selectedItem
+                    ? `${selectedItem.Title}`
+                    : 'Mathe-Prüfungen BBR und MSA: Aufgaben, Praxis, Grundlagen und Lerninhalte'}
+                </title>
+                <meta
+                name="description"
+                content={
+                    selectedItem
+                    ? selectedItem.Description
+                    : 'Mathe-BBR, Mathe-MSA: Bereite deinen mittleren Schulabschlusse systematisch und abwechslungsreich vor. Mit orginalgetreue Prüfungsaufgaben BBR und MSA incl. Basisaufgaben und Praxisbeispielen sicherst du deinen Erfolg in Mathe.'
+                }
+                />
+                <meta
+                property="og:title"
+                content={
+                    selectedItem
+                    ? selectedItem.Title
+                    : 'Mathe-Prüfungen BBR und MSA: Aufgaben, Praxis, Grundlagen und Lerninhalte'
+                }
+                />
+                <meta
+                property="og:description"
+                content={
+                    selectedItem
+                    ? selectedItem.Description
+                    : 'Mathe-BBR, Mathe-MSA: Bereite deinen mittleren Schulabschlusse systematisch und abwechslungsreich vor. Mit orginalgetreue Prüfungsaufgaben BBR und MSA incl. Basisaufgaben und Praxisbeispielen sicherst du deinen Erfolg in Mathe.'
+                }
+                />
+                                <meta
+                property="twitter:title"
+                content={
+                    selectedItem
+                    ? selectedItem.Title
+                    : 'Mathe-Prüfungen BBR und MSA: Aufgaben, Praxis, Grundlagen und Lerninhalte'
+                }
+                />
+                <meta
+                property="twitter:description"
+                content={
+                    selectedItem
+                    ? selectedItem.Description
+                    : 'Mathe-BBR, Mathe-MSA: Bereite deinen mittleren Schulabschlusse systematisch und abwechslungsreich vor. Mit orginalgetreue Prüfungsaufgaben BBR und MSA incl. Basisaufgaben und Praxisbeispielen sicherst du deinen Erfolg in Mathe.'
+                }
+                />
+            </Helmet>
 
         {userConfig && (
                 <>
+
 
         <div className={`${userConfig.background}`}>
         {/*<div className={`${userConfig.background}`}>*/}
@@ -324,7 +388,7 @@ export default function FetchCSVData() {
                                     onClick={handleTitleClick}
                                 >
                                     {userConfig?.taskheader || "Task List"}
-                                    <button class="bg-gray-700 hover:bg-gray-500 text-white font-bold mx-2 py-0 px-4 rounded-full">
+                                    <button className="bg-gray-700 hover:bg-gray-500 text-white font-bold mx-2 py-0 px-4 rounded-full">
                                         shuffle
                                     </button>
                                 </th>
@@ -444,7 +508,8 @@ export default function FetchCSVData() {
                 {/* Footer */}
                 {userConfig && (
                 <footer className="mt-4 text-center text-sm text-gray-600">
-                    <p>{userConfig.company}</p>
+                    {/*<p>{userConfig.company}</p>*/}
+                    &copy; <a href="https://www.linkedin.com/in/internetpartnership" target="_blank" nofollow>Dr. Eckard Ritter,</a> Lehrer für Mathematik und Physik an der Wolfgang-Borchert-Schule, Berlin-Spandau
                 </footer>
             )}
         </div>
