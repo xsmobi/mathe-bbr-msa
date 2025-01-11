@@ -3,34 +3,10 @@ import { Helmet } from 'react-helmet-async';
 //import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import MarkdownParser from "./MarkdownParser";
-const styles = {
-    bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
-    //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
-    container: "bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4",
-};
-/*
+
+
+
 const sprueche=
-[
-    { "text": "Bereit für den Mathe-Boost? Starte jetzt und mach jeden Tag 1 Aufgabe & 1 Basics & 1 Beispiel" },
-    { "text": "mathe-bbr-msa.app begleitet den Matheunterricht in der Mittelstufe und ist eine Hilfe für Schüler, Lehrer und Eltern." },
-    { "text": "Ausfall beim BBR ist uncool. Bereite dich Ausfall-sicher vor, du kannst es! Jede/r kann die 5 vermeiden!" },
-    { "text": "Keiner muss beim BBR einen Ausfall haben. Erfolg liegt in deiner Hand - mit dieser App: mache Original-BBR-Aufgaben, schaue dir Demos und Beispiele an, sichere dein Grundwissen."},
-    { "text": "Klick auf den Tag BASICS und verbessere heute deine Grundlagen." },
-    { "text": "Mathe GR-Kurs? Hol dir im zweiten Halbjahr den ER-Kurs!" },
-    { "text": "Klicke auf AUFGABEN und hol dir jeden Tag eine Aufgabe mit Lösung" },
-    { "text": "Hol dir eine Aufgabe mit Lösung und rechne sie in der Klasse vor - nimm dein Telefon mit dieser App zur Hilfe!" },
-    { "text": "Trainiere dein Gehirn mit Kopfrechnen" },
-    { "text": "Bei der Vorbereitung für den Mittleren Schulabschluss müssen alle Mathe-Themen der Mittelstufe wiederholt und immer wieder am Basis-Können der Grundschule festgemacht werden." },
-    { "text": "Lerne mit Freude und Leichtigkeit. Lieber kurz und konzentriert als stundenlang und abgelenkt!" },
-    { "text": "Du schaffst die MSA-Prüfung! Glaube an dich! Aber nicht nur glauben: du musst auch arbeiten"},
-    { "text": "mathe-bbr-msa.app bietet einen Pool aus über 500 Aufgaben mit Lösungen, Anwendungsbeispielen und Lehrinhalten"},
-    { "text": "mathe-bbr-msa.app bietet Textaufgaben aus den großen Mathethemen wie Lineare Funktionen, Lineare Gleichungssysteme oder Sinussatz, die in jeder Mittelschulabschlussprüfung vorkommen."},
-    { "text": "In mathe-bbr-msa.app findest du Basisaufgaben, die dein Mathe-Grundverständnis testen. Du wiederholst die Grundlagen immer wieder neu."},
-    { "text": "Grundlagen-Themen sind Proportionalität, Maßeinheiten, oder auch Umrechnungsaufgaben der Physik."},
-    { "text": "Entdecke, dass Mathe Spaß machen kann. Du musst nur eine Aufgabe richtig gut können und damit angeben!" },
-  ]
-*/
-  const sprueche=
     [
         { "text": "AUFGABEN ist einer von  4 Typen von Mathe-Helfern: AUFGABEN, BASICS, DEMO, LERNEN. Mit AUFGABEN erhältst du echte Prüfungsaufgaben aus Original-BBR- oder MSA-Prüfungen. Mit originalgetreuen BBR- und MSA-Aufgaben bereitest du dich optimal auf deine Matheprüfung vor." },
         { "text": "Finde mit AUFGABEN deine Stärken und Schwächen heraus und löse Probleme gezielt, z.B. mit dem Typ BASICS, denn oft ist fehlendes Basis-Können aus der Grundschule das Problem." },      
@@ -43,7 +19,7 @@ const sprueche=
         { "text": "mathe-bbr-msa.app bietet Textaufgaben aus den großen Mathethemen wie Lineare Funktionen, Lineare Gleichungssysteme oder Sinussatz, die in jeder Mittelschulabschlussprüfung vorkommen."},
         { "text": "In mathe-bbr-msa.app findest du Basisaufgaben, die dein Mathe-Grundverständnis testen. Du wiederholst die Grundlagen immer wieder neu."},
         { "text": "Bereit für den Mathe-Boost? Starte jetzt und mach jeden Tag 1 Aufgabe & 1 Demo & 1 Basics & 1 Lerneinheit" },
-    ]
+]
 
 
 export default function FetchCSVData() {
@@ -57,19 +33,19 @@ export default function FetchCSVData() {
     const [userConfig, setUserConfig] = useState(null);
     const [isLoading, setIsLoading] = useState(true); // Combined loading state
     const [searchParams, setSearchParams] = useSearchParams();
+    
     //const CONFIG_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vThQ15wdx_k6NXDvAN7sYrtQdHjaBKWGyn0k8NoV4GHhKKxznsP82gRfChgB4K-4PxQptKZ50Bqc04L/pub?gid=0&single=true&output=csv';
 
-    /*
-    const [currentQuote, setCurrentQuote] = useState(0);
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-          setCurrentQuote((prevQuote) => (prevQuote + 1) % sprueche.length);
-        }, 1800); // Millisekunden
-        return () => clearInterval(intervalId);
-    }, []);
-    */
     const [currentQuote, setCurrentQuote] = useState(0);
     const [shuffledSprueche, setShuffledSprueche] = useState([]);
+    //const [activeWidth, setActiveWidth] = useState(500);
+
+    const styles = {
+        bg: "h-screen w-screen p-4 bg-gradient-to-r from-[#2f80ed] to-[#1cb5e0]",
+        //bg: "h-screen w-screen p-4 bg-gradient-to-b from-[#ffffff] to-[#d6d6d6]",
+        //container: `bg-slate-100 max-w-[${activeWidth}px] w-full m-auto rounded-md shadow-xl p-4`,
+        container: `bg-slate-100 max-w-[620px] w-full m-auto rounded-md shadow-xl p-4`,
+    };
     
     useEffect(() => {
       // Shuffle the array on mount
@@ -388,9 +364,18 @@ export default function FetchCSVData() {
                                     onClick={handleTitleClick}
                                 >
                                     {userConfig?.taskheader || "Task List"}
-                                    <button className="bg-gray-700 hover:bg-gray-500 text-white font-bold mx-2 py-0 px-4 rounded-full">
-                                        shuffle
-                                    </button>
+                                    
+                                        <button className="mx-2 bg-gray-700 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full">
+                                            Shuffle
+                                        </button>
+                                        {/* 
+                                        <button
+                                            className="bg-gray-700 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded-full"
+                                            onClick={() => setActiveWidth(activeWidth === 500 ? 1080 : 500)}
+                                        >
+                                            {activeWidth === 500 ? '< -- >' : '> -- <'}
+                                        </button>
+                                        */}
                                 </th>
                             </tr>
                         </thead>
@@ -413,7 +398,7 @@ export default function FetchCSVData() {
                 <div className="relative p-4 bg-gray-100 border border-gray-300 rounded-md">
                     <button
                         onClick={handleCloseProfile}
-                        className="absolute top-2 right-2 text-gray-500 text-xl hover:text-gray-700 text-xl font-bold"
+                        className="absolute top-1 right-1 text-gray-500 text-xl hover:text-gray-700 text-xl font-bold"
                     >
                         ×
                     </button>

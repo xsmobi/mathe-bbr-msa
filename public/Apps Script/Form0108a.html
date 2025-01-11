@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Data Entry Form</title>
+    <!-- Add Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://apis.google.com/js/platform.js"></script>
+        <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .row-dark { background-color: #d1d5db; } /* Darker gray */
+      .row-light { background-color: #f3f4f6; } /* Lighter gray */
+    </style>
+    <script>
+      /*
+      document.addEventListener("DOMContentLoaded", () => {
+        const inputs = document.querySelectorAll("input[id^='Image']");
+        inputs.forEach((input, index) => {
+          input.addEventListener("input", () => {
+            const imgId = `img-preview-${index + 1}`;
+            let imgElement = document.getElementById(imgId);
+
+            if (!imgElement) {
+              imgElement = document.createElement("img");
+              imgElement.id = imgId;
+              imgElement.className = "mt-2 max-w-full h-auto border border-gray-300 rounded";
+              input.insertAdjacentElement("afterend", imgElement);
+            }
+
+            const url = input.value;
+            if (url) {
+              imgElement.src = url;
+              imgElement.alt = document.getElementById(`Title${index + 1}`).value || "Image preview";
+              imgElement.style.display = "block";
+            } else {
+              imgElement.style.display = "none";
+            }
+          });
+        });
+      });
+      */
+    </script>
+  </head>
+  <body class="bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4">
+    <!--<h1>Data Entry Form</h1>-->
+    <!--<h2>Search</h2>-->
+    <!--<form id="searchForm" class="space-y-4 p-6 bg-gray-100 rounded-lg shadow-md">-->
+    <input type="text" id="searchQuery" placeholder="Search..." oninput="searchRows()"
+      class="w-full p-2 border border-gray-300 rounded-md" />
+    <table id="searchResults">
+      <thead>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <!--</form>-->
+    
+    <form id="dataForm" class="space-y-4 p-6 bg-gray-100 rounded-lg shadow-md">
+
+    <button
+      id="addButton"
+      type="button"
+      onclick="addRow()"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+    >
+      Add
+    </button>
+      <button
+      id="saveButton"
+      type="button"
+      onclick="editRow()"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+    >
+      Save Changes
+    </button>
+      <button
+      id="deleteButton"
+      type="button"
+      onclick="deleteRow()"
+      class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+    >
+      Delete
+    </button>
+    <button
+      id="clearButton"
+      type="button"
+      onclick="clearForm()"
+      class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600"
+    >
+      Clear Form
+    </button>
+
+    <input
+      type="text"
+      id="id"
+      placeholder="ID (Auto-filled for editing)"
+      readonly
+      class="w-full p-2 border border-gray-300 rounded-md bg-gray-200 cursor-not-allowed"
+    />
+    <input
+      type="text"
+      id="Publish"
+      placeholder="Publish"
+      class="w-full p-2 border border-gray-300 rounded-md"
+    />
+    <div class="mb-4">
+      <label for="Title" class="block text-sm font-medium text-gray-700">Title</label>
+      <textarea
+        id="Title"
+        placeholder="Title"
+        rows="4"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      ></textarea>
+    </div>
+    <div class="mb-4">
+      <label for="Description" class="block text-sm font-medium text-gray-700">Description</label>
+      <textarea
+        id="Description"
+        placeholder="Description"
+        rows="4"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      ></textarea>
+    </div>
+    <div class="mb-4">
+      <label for="Type" class="block text-sm font-medium text-gray-700">Type</label>
+      <select id="Type" class="w-full p-2 border border-gray-300 rounded-md">
+        <!-- Options will be dynamically populated -->
+      </select>
+      <input
+        type="text"
+        id="newType"
+        placeholder="Add new type"
+        class="w-full p-2 mt-2 border border-gray-300 rounded-md"
+      />
+      <button
+        type="button"
+        onclick="addNewType()"
+        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-2"
+      >
+        Add Type
+      </button>
+    </div>
+    </div>
+    <div class="mb-4">
+      <label for="Tags" class="block text-sm font-medium text-gray-700">Tags</label>
+      <select id="Tags" multiple class="w-full p-2 border border-gray-300 rounded-md">
+        <!-- Options will be dynamically populated -->
+      </select>
+      <input
+        type="text"
+        id="newTag"
+        placeholder="Add new tag"
+        class="w-full p-2 mt-2 border border-gray-300 rounded-md"
+      />
+      <button
+        type="button"
+        onclick="addNewTag()"
+        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-2"
+      >
+        Add Tag
+      </button>
+    </div>
+
+    <!-- Row for Title1 -->
+    <div class="row-dark">
+      <input type="text" id="Title1" placeholder="Title1" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image1"
+          placeholder="Image1"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image1"
+          onclick="previewImage('Image1')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video1"
+          placeholder="Video1"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video1"
+          onclick="previewVideo('Video1')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio1"
+          placeholder="Audio1"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio1"
+          onclick="previewAudio('Audio1')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption1" placeholder="Caption1" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <!-- Rows for Title2 through Title6 -->
+    <div class="row-light">
+      <input type="text" id="Title2" placeholder="Title2" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image2"
+          placeholder="Image2"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image2"
+          onclick="previewImage('Image2')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video2"
+          placeholder="Video2"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video2"
+          onclick="previewVideo('Video2')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio2"
+          placeholder="Audio2"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio2"
+          onclick="previewAudio('Audio2')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption2" placeholder="Caption2" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-dark">
+      <input type="text" id="Title3" placeholder="Title3" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image3"
+          placeholder="Image3"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image3"
+          onclick="previewImage('Image3')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video3"
+          placeholder="Video3"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video3"
+          onclick="previewVideo('Video3')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio3"
+          placeholder="Audio3"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio3"
+          onclick="previewAudio('Audio3')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption3" placeholder="Caption3" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-light">
+      <input type="text" id="Title4" placeholder="Title4" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image4"
+          placeholder="Image4"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image4"
+          onclick="previewImage('Image4')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video4"
+          placeholder="Video4"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video4"
+          onclick="previewVideo('Video4')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio4"
+          placeholder="Audio4"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio4"
+          onclick="previewAudio('Audio4')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption4" placeholder="Caption4" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-dark">
+      <input type="text" id="Title5" placeholder="Title5" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image5"
+          placeholder="Image5"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image5"
+          onclick="previewImage('Image5')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video5"
+          placeholder="Video5"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video5"
+          onclick="previewVideo('Video5')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio5"
+          placeholder="Audio5"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio5"
+          onclick="previewAudio('Audio5')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption5" placeholder="Caption5" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-light">
+      <input type="text" id="Title6" placeholder="Title6" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image6"
+          placeholder="Image6"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image6"
+          onclick="previewImage('Image6')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video6"
+          placeholder="Video6"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video6"
+          onclick="previewVideo('Video6')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio6"
+          placeholder="Audio6"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio6"
+          onclick="previewAudio('Audio6')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption6" placeholder="Caption6" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+<!-- Repeat similar pattern for rows 7 through 10 -->
+
+    
+    
+    <!-- Rows for Title7 through Title10 -->
+    <div class="row-dark">
+      <input type="text" id="Title7" placeholder="Title7" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image7"
+          placeholder="Image7"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image7"
+          onclick="previewImage('Image7')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video7"
+          placeholder="Video7"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video7"
+          onclick="previewVideo('Video7')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio7"
+          placeholder="Audio7"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio7"
+          onclick="previewAudio('Audio7')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption7" placeholder="Caption7" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-light">
+      <input type="text" id="Title8" placeholder="Title8" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image8"
+          placeholder="Image8"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image8"
+          onclick="previewImage('Image8')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video8"
+          placeholder="Video8"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video8"
+          onclick="previewVideo('Video8')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio8"
+          placeholder="Audio8"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio8"
+          onclick="previewAudio('Audio8')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption8" placeholder="Caption8" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-dark">
+      <input type="text" id="Title9" placeholder="Title9" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image9"
+          placeholder="Image9"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image9"
+          onclick="previewImage('Image9')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video9"
+          placeholder="Video9"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video9"
+          onclick="previewVideo('Video9')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio9"
+          placeholder="Audio9"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio9"
+          onclick="previewAudio('Audio9')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption9" placeholder="Caption9" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="row-light">
+      <input type="text" id="Title10" placeholder="Title10" class="w-full p-2 border border-gray-300 rounded-md" />
+      <div class="image-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Image10"
+          placeholder="Image10"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Image10"
+          onclick="previewImage('Image10')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Preview
+        </button>
+      </div>
+      <div class="video-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Video10"
+          placeholder="Video10"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Video10"
+          onclick="previewVideo('Video10')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Watch
+        </button>
+      </div>
+      <div class="audio-input-wrapper flex items-center gap-2">
+        <input
+          type="text"
+          id="Audio10"
+          placeholder="Audio10"
+          class="w-full p-2 border border-gray-300 rounded-md"
+        />
+        <button
+          type="button"
+          id="preview-button-Audio10"
+          onclick="previewAudio('Audio10')"
+          class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+        >
+          Listen
+        </button>
+      </div>
+      <textarea id="Caption10" placeholder="Caption10" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
+    </div>
+
+    <div class="link-input-wrapper flex items-center gap-2">
+      <input
+        type="text"
+        id="Link1"
+        placeholder="Link1"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      />
+      <input
+        type="text"
+        id="url1"
+        placeholder="URL1"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      />
+      <button
+        type="button"
+        id="preview-button-Link1"
+        onclick="previewLink('url1')"
+        class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+      >
+        Open
+      </button>
+    </div>
+
+    <div class="link-input-wrapper flex items-center gap-2">
+      <input
+        type="text"
+        id="Link2"
+        placeholder="Link2"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      />
+      <input
+        type="text"
+        id="url2"
+        placeholder="URL2"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      />
+      <button
+        type="button"
+        id="preview-button-Link2"
+        onclick="previewLink('url2')"
+        class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+      >
+        Open
+      </button>
+    </div>
+
+    <div class="link-input-wrapper flex items-center gap-2">
+      <input
+        type="text"
+        id="Link3"
+        placeholder="Link3"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      />
+      <input
+        type="text"
+        id="url3"
+        placeholder="URL3"
+        class="w-full p-2 border border-gray-300 rounded-md"
+      />
+      <button
+        type="button"
+        id="preview-button-Link3"
+        onclick="previewLink('url3')"
+        class="p-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+      >
+        Open
+      </button>
+    </div>
+
+    </form>
+
+    <script>
+      function googleScriptCall(functionName, params, callback) {
+        google.script.run.withSuccessHandler(callback)[functionName](...params);
+      }
+
+      function addRow() {
+        const data = [
+            document.getElementById("id").value || "ID-" + Date.now(),
+            ...getDataEntryFields()
+        ];
+        googleScriptCall("addRow", [data], (message) => {
+            alert(message);
+            populateForm(data); // Load newly added data into the form
+            searchRows(); // Refresh the search results
+        });
+      }
+
+      function editRow() {
+        const id = document.getElementById("id").value;
+        const updatedData = [
+            id,
+            ...getDataEntryFields()
+        ];
+        googleScriptCall("editRow", [id, updatedData], (message) => {
+          alert(message);
+          searchRows(); // Refresh the search results
+        });
+      }
+      /*
+      function deleteRow() {
+          const id = document.getElementById("id").value;
+
+          if (id) {
+              googleScriptCall("deleteRow", [id], (message) => {
+                  alert(message);
+
+                  // Clear the form after deletion
+                  clearForm();
+
+                  // Update button states: Only Add button should be visible
+                  updateButtonStates(false);
+              });
+          }
+      }
+      */
+      function deleteRow() {
+          const id = document.getElementById("id").value;
+
+          if (id) {
+              googleScriptCall("deleteRow", [id], (message) => {
+                  alert(message); // Notify the user of the deletion
+
+                  clearForm(); // Clear the form after deletion
+
+                  // Remove the deleted row from the search results
+                  removeRowFromSearchResults(id);
+
+                  // Update button states: Only Add button should be visible
+                  updateButtonStates(false);
+              });
+          }
+      }
+
+
+      function setButtonStates(isRowLoaded) {
+          const addButton = document.querySelector('button[onclick="addRow()"]');
+          const saveButton = document.querySelector('button[onclick="editRow()"]');
+          const deleteButton = document.querySelector('button[onclick="deleteRow()"]');
+
+          if (isRowLoaded) {
+              addButton.disabled = true; // Disable "Add" if data is loaded
+              saveButton.disabled = false; // Enable "Save Changes"
+              deleteButton.disabled = false; // Enable "Delete"
+          } else {
+              addButton.disabled = false; // Enable "Add" when form is empty
+              saveButton.disabled = true; // Disable "Save Changes"
+              deleteButton.disabled = true; // Disable "Delete"
+          }
+      }
+
+      function clearSearchField() {
+          document.getElementById("searchQuery").value = "";
+      }
+
+      function togglePreviewButton(inputId) {
+        const input = document.getElementById(inputId);
+        const previewButton = document.getElementById(`preview-button-${inputId}`);
+        
+        if (input.value.trim()) {
+          previewButton.classList.remove('hidden'); // Show the button
+        } else {
+          previewButton.classList.add('hidden'); // Hide the button
+        }
+      }
+
+      function previewImage(inputId) {
+        const input = document.getElementById(inputId);
+        const url = input.value.trim();
+
+        if (url) {
+          window.open(url, '_blank'); // Open image in new tab
+        } else {
+          alert('Please enter a valid image URL.');
+        }
+      }
+
+
+      let isProgrammaticUpdate = false;
+      let isEditing = false; // New flag to track editing state
+
+      // Update button handlers
+      document.querySelector('button[onclick="addRow()"]').onclick = () => {
+          addRow();
+          clearSearchField();
+      };
+      document.querySelector('button[onclick="editRow()"]').onclick = () => {
+          editRow();
+          clearSearchField();
+      };
+      document.querySelector('button[onclick="deleteRow()"]').onclick = () => {
+          deleteRow();
+          clearSearchField();
+      };
+      document.querySelector('button[onclick="clearForm()"]').onclick = () => {
+          clearForm();
+          clearSearchField();
+      };
+
+      function searchRows() {
+          const query = document.getElementById("searchQuery").value;
+
+          // Only perform the search if the query has more than 2 characters
+          if (query.length <= 2) {
+              const table = document.getElementById("searchResults");
+              const tbody = table.querySelector("tbody");
+              const thead = table.querySelector("thead");
+              tbody.innerHTML = ""; // Clear previous results
+              thead.style.display = "none"; // Hide header
+              return; // Exit the function
+          }
+
+          googleScriptCall("searchRows", [query], (results) => {
+              const table = document.getElementById("searchResults");
+              const tbody = table.querySelector("tbody");
+              const thead = table.querySelector("thead");
+
+              tbody.innerHTML = ""; // Clear previous results
+
+              if (results.length === 0) {
+                  // Hide the header if no results
+                  thead.style.display = "none";
+              } else {
+                  // Show the header if there are results
+                  setButtonStates(true);                                  // Button states!
+                  thead.style.display = "";
+                  results.forEach((row, rowIndex) => {
+                      const tr = document.createElement("tr");
+
+                      // Apply alternating row background for striping
+                      tr.className = rowIndex % 2 === 0 ? "bg-gray-100" : "bg-white";
+
+                      // Display only "id" and "Title"
+                      const fieldsToShow = [0, 2]; // Indices of "id" and "Title"
+                      fieldsToShow.forEach((index) => {
+                          const td = document.createElement("td");
+                          td.textContent = row[index];
+                          tr.appendChild(td);
+                      });
+
+                      // Add the "Select" button
+                      const actionTd = document.createElement("td");
+                      const selectBtn = document.createElement("button");
+                      selectBtn.textContent = "Select";
+                      selectBtn.className = "bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all";
+                      selectBtn.onclick = () => populateForm(row); // Set up "Select" button to populate form
+                      actionTd.appendChild(selectBtn);
+                      tr.appendChild(actionTd);
+
+                      tbody.appendChild(tr);
+                  });
+              }
+          });
+      }
+
+      function populateForm(row) {
+          isProgrammaticUpdate = true; // Indicate programmatic update
+          isEditing = true; // Indicate that a record is being edited
+
+          // Populate ID, Publish, Title, Description, and Type
+          document.getElementById("id").value = row[0]; // ID
+          document.getElementById("Publish").value = row[1]; // Publish
+          document.getElementById("Title").value = row[2]; // Title
+          document.getElementById("Description").value = row[3]; // Description
+          document.getElementById("Type").value = row[4]; // Type
+
+          // Handle multiple selection for Tags
+          const tagsSelect = document.getElementById("Tags");
+
+          const selectedTags = row[5]?.split(',').map(tag => tag.trim()).sort() || []; // Split and sort tags
+
+          // Update options to reflect sorted selection
+          Array.from(tagsSelect.options).forEach(option => {
+            option.selected = selectedTags.includes(option.value);
+          });
+
+          // Populate other fields (if applicable)
+          const otherFieldIds = [
+              "Title1", "Image1", "Video1", "Audio1", "Caption1",
+              "Title2", "Image2", "Video2", "Audio2", "Caption2",
+              "Title3", "Image3", "Video3", "Audio3", "Caption3",
+              "Title4", "Image4", "Video4", "Audio4", "Caption4",
+              "Title5", "Image5", "Video5", "Audio5", "Caption5",
+              "Title6", "Image6", "Video6", "Audio6", "Caption6",
+              "Title7", "Image7", "Video7", "Audio7", "Caption7",
+              "Title8", "Image8", "Video8", "Audio8", "Caption8",
+              "Title9", "Image9", "Video9", "Audio9", "Caption9",
+              "Title10", "Image10", "Video10", "Audio10", "Caption10",
+              "Link1", "url1", "Link2", "url2", "Link3", "url3"
+          ];
+
+          otherFieldIds.forEach((id, index) => {
+              const field = document.getElementById(id);
+              if (field) {
+                  field.value = row[index + 6] || ""; // Populate other fields starting at row[6]
+              }
+          });
+
+          // Update button states
+          // setButtonStates(true);
+          
+          // Manually update button states after populating the form
+          //const formFilled = isFormFilled();
+          //updateButtonStates(formFilled);   //Eventlistener!
+          updateButtonStates(true); // Update button states                     updateButtonStates(true); // Update button states
+          isProgrammaticUpdate = false; // Reset the flag
+      }
+
+      function clearForm() {
+        const fieldIds = [
+            "id", "Publish", "Title", "Description",
+            "Type", "Tags",
+            "Title1", "Image1", "Video1", "Audio1", "Caption1",
+            "Title2", "Image2", "Video2", "Audio2", "Caption2",
+            "Title3", "Image3", "Video3", "Audio3", "Caption3",
+            "Title4", "Image4", "Video4", "Audio4", "Caption4",
+            "Title5", "Image5", "Video5", "Audio5", "Caption5",
+            "Title6", "Image6", "Video6", "Audio6", "Caption6",
+            "Title7", "Image7", "Video7", "Audio7", "Caption7",
+            "Title8", "Image8", "Video8", "Audio8", "Caption8",
+            "Title9", "Image9", "Video9", "Audio9", "Caption9",
+            "Title10", "Image10", "Video10", "Audio10", "Caption10",
+            "Link1", "url1", "Link2", "url2", "Link3", "url3",
+        ];
+
+        fieldIds.forEach(id => {
+            const field = document.getElementById(id);
+            if (field) {
+                field.value = "";
+            }
+        });
+
+        //setButtonStates(false); // Update button states
+
+        isEditing = false; // Reset editing state
+        // Update button states: Only Add button should be visible
+        updateButtonStates(false);
+      }
+
+      function getDataEntryFields() {
+        const fieldIds = [
+          "Publish", "Title", "Description", 
+          "Title1", "Image1", "Video1", "Audio1", "Caption1",
+          "Title2", "Image2", "Video2", "Audio2", "Caption2",
+          "Title3", "Image3", "Video3", "Audio3", "Caption3",
+          "Title4", "Image4", "Video4", "Audio4", "Caption4",
+          "Title5", "Image5", "Video5", "Audio5", "Caption5",
+          "Title6", "Image6", "Video6", "Audio6", "Caption6",
+          "Title7", "Image7", "Video7", "Audio7", "Caption7",
+          "Title8", "Image8", "Video8", "Audio8", "Caption8",
+          "Title9", "Image9", "Video9", "Audio9", "Caption9",
+          "Title10", "Image10", "Video10", "Audio10", "Caption10",
+          "Link1", "url1", "Link2", "url2", "Link3", "url3"
+        ];
+
+        // Collect field values
+        const fields = fieldIds.map(id => document.getElementById(id).value);
+
+        // Handle the "Type" field
+        const typeValue = document.getElementById("Type").value;
+
+        // Handle multiple selected options for "Tags"
+        const tagsSelect = document.getElementById("Tags");
+        const selectedTags = Array.from(tagsSelect.selectedOptions).map(option => option.value).join(', ');
+
+        // Insert "Type" and "Tags" into their correct positions
+        fields.splice(3, 0, typeValue); // Insert "Type" at index 3
+        fields.splice(4, 0, selectedTags); // Insert "Tags" at index 4
+
+        return fields;
+      }
+
+      function populateTagsFromSheet(tags) {
+          const tagsSelect = document.getElementById("Tags");
+          tagsSelect.innerHTML = ""; // Clear existing options
+
+          // Sort tags alphabetically
+          const sortedTags = tags.slice().sort();
+
+          sortedTags.forEach(tag => {
+              const option = document.createElement("option");
+              option.value = tag;
+              option.textContent = tag;
+              tagsSelect.appendChild(option);
+          });
+      }
+
+      function addNewTag() {
+          const newTagInput = document.getElementById("newTag");
+          const tagsSelect = document.getElementById("Tags");
+          if (newTagInput.value.trim()) {
+              const option = document.createElement("option");
+              option.value = newTagInput.value;
+              option.textContent = newTagInput.value;
+              tagsSelect.appendChild(option);
+              newTagInput.value = ""; // Clear the input field
+          }
+      }
+
+      function populateTypesFromSheet(types) {
+          const typeSelect = document.getElementById("Type");
+          typeSelect.innerHTML = ""; // Clear existing options
+          types.forEach(type => {
+              const option = document.createElement("option");
+              option.value = type;
+              option.textContent = type;
+              typeSelect.appendChild(option);
+          });
+      }
+
+      function addNewType() {
+          const newTypeInput = document.getElementById("newType");
+          const typeSelect = document.getElementById("Type");
+          if (newTypeInput.value.trim()) {
+              const option = document.createElement("option");
+              option.value = newTypeInput.value;
+              option.textContent = newTypeInput.value;
+              typeSelect.appendChild(option);
+              newTypeInput.value = ""; // Clear the input field
+          }
+      }
+
+      function populateOptions(data) {
+          // Populate the "Type" dropdown
+          const typeSelect = document.getElementById("Type");
+          typeSelect.innerHTML = ""; // Clear existing options
+
+          // Add a default "Please Select" option
+          const defaultTypeOption = document.createElement("option");
+          defaultTypeOption.value = "";
+          defaultTypeOption.textContent = "Please Select";
+          typeSelect.appendChild(defaultTypeOption);
+
+          // Add each type as an option
+          data.Types.forEach(type => {
+              const option = document.createElement("option");
+              option.value = type;
+              option.textContent = type;
+              typeSelect.appendChild(option);
+          });
+
+          // Populate the "Tags" dropdown
+          const tagsSelect = document.getElementById("Tags");
+          tagsSelect.innerHTML = ""; // Clear existing options
+
+          // Use a Set to avoid duplicate tags
+          const tagsSet = new Set();
+
+          // Process each tag entry
+          data.Tags.forEach(tagString => {
+              const individualTags = tagString.split(',').map(tag => tag.trim()); // Split and trim each tag
+              individualTags.forEach(tag => tagsSet.add(tag)); // Add each individual tag to the Set
+          });
+
+          // Convert Set to Array, sort, and add each tag as an option
+          Array.from(tagsSet).sort().forEach(tag => {
+              const option = document.createElement("option");
+              option.value = tag;
+              option.textContent = tag;
+              tagsSelect.appendChild(option);
+          });
+
+          // console.log("Options populated and Tags sorted alphabetically");
+      }
+
+      // Ensure sorting of the Tags dropdown
+      function sortTagsDropdown() {
+          const tagsSelect = document.getElementById("Tags");
+          const options = Array.from(tagsSelect.options);
+
+          // Sort options alphabetically by their text content
+          options.sort((a, b) => a.textContent.localeCompare(b.textContent));
+
+          // Clear and re-add sorted options
+          tagsSelect.innerHTML = "";
+          options.forEach(option => tagsSelect.appendChild(option));
+      }
+
+      function showButton(buttonId) {
+          const button = document.getElementById(buttonId);
+          if (button) button.style.display = 'inline-block';
+      }
+
+      function hideButton(buttonId) {
+          const button = document.getElementById(buttonId);
+          if (button) button.style.display = 'none';
+      }
+  
+      function updateButtonStates(isFormFilled) {
+          if (isEditing) {
+              // Show Save, Delete, and Clear buttons when editing
+              if (isFormFilled) {
+                  showButton('saveButton');
+                  showButton('deleteButton');
+                  showButton('clearButton');
+                  hideButton('addButton');
+              } else {
+                  hideButton('saveButton');
+                  hideButton('deleteButton');
+                  hideButton('clearButton');
+                  showButton('addButton');
+              }
+          } else {
+              // For manual input, only show the Add button
+              hideButton('saveButton');
+              hideButton('deleteButton');
+              hideButton('clearButton');
+              showButton('addButton');
+          }
+      }
+
+      function isFormFilled() {
+          const form = document.getElementById('dataForm');
+          const inputs = form.querySelectorAll('input, textarea, select');
+          return Array.from(inputs).some(input => input.value.trim() !== '');
+      }
+
+      function removeRowFromSearchResults(id) {
+          const table = document.getElementById("searchResults");
+          const rows = Array.from(table.querySelectorAll("tbody tr"));
+
+          rows.forEach((row) => {
+              const cells = row.querySelectorAll("td");
+              if (cells.length > 0 && cells[0].textContent.trim() === id) {
+                  row.remove(); // Remove the matching row
+              }
+          });
+
+          // Optionally hide the table if there are no rows left
+          const tbody = table.querySelector("tbody");
+          if (tbody.children.length === 0) {
+              table.querySelector("thead").style.display = "none";
+          }
+      }
+
+      function previewImage(inputId) {
+        const input = document.getElementById(inputId);
+        const url = input.value.trim();
+
+        if (url) {
+          // Open the image in a new tab
+          window.open(url, '_blank');
+        } else {
+          alert('Please enter a valid image URL.');
+        }
+      }
+
+      function previewVideo(inputId) {
+        const input = document.getElementById(inputId);
+        const url = input.value.trim();
+
+        if (url) {
+          window.open(url, '_blank'); // Open the video in a new tab
+        } else {
+          alert('Please enter a valid video URL.');
+        }
+      }
+
+      function previewAudio(inputId) {
+        const input = document.getElementById(inputId);
+        const url = input.value.trim();
+
+        if (url) {
+          const audio = new Audio(url);
+          audio.play(); // Play the audio
+        } else {
+          alert('Please enter a valid audio URL.');
+        }
+      }
+
+      function previewLink(inputId) {
+        const input = document.getElementById(inputId);
+        const url = input.value.trim();
+
+        if (url) {
+          window.open(url, '_blank'); // Open the link in a new tab
+        } else {
+          alert('Please enter a valid URL.');
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        hideButton('saveButton');
+        hideButton('deleteButton');
+        hideButton('clearButton');
+        showButton('addButton');
+
+        const form = document.getElementById('dataForm');
+        form.addEventListener('input', () => {
+            const formFilled = isFormFilled();
+            updateButtonStates(formFilled);
+        });
+
+        const formFilled = isFormFilled();
+        updateButtonStates(formFilled);
+
+        google.script.run.withSuccessHandler((data) => {
+        populateOptions(data); // Populate Types and Tags
+        sortTagsDropdown(); // Ensure Tags dropdown is sorted
+        }).getOptions();
+
+
+      });
+
+   
+    </script>
+  </body>
+</html>
