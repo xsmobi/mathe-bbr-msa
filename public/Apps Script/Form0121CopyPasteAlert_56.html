@@ -5,44 +5,22 @@
     <!-- Add Tailwind CSS via CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://apis.google.com/js/platform.js"></script>
-        <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    // 15.01.25
+    /*
+    // Dynamically detect the correct origin
+    const targetOrigin = window.location.origin;
+    // Use postMessage with the correct origin
+    window.parent.postMessage('Hello from iframe!', targetOrigin);
+    */
+    </script>
     <style>
       .row-dark { background-color: #d1d5db; } /* Darker gray */
       .row-light { background-color: #f3f4f6; } /* Lighter gray */
     </style>
-    <script>
-      /*
-      document.addEventListener("DOMContentLoaded", () => {
-        const inputs = document.querySelectorAll("input[id^='Image']");
-        inputs.forEach((input, index) => {
-          input.addEventListener("input", () => {
-            const imgId = `img-preview-${index + 1}`;
-            let imgElement = document.getElementById(imgId);
 
-            if (!imgElement) {
-              imgElement = document.createElement("img");
-              imgElement.id = imgId;
-              imgElement.className = "mt-2 max-w-full h-auto border border-gray-300 rounded";
-              input.insertAdjacentElement("afterend", imgElement);
-            }
-
-            const url = input.value;
-            if (url) {
-              imgElement.src = url;
-              imgElement.alt = document.getElementById(`Title${index + 1}`).value || "Image preview";
-              imgElement.style.display = "block";
-            } else {
-              imgElement.style.display = "none";
-            }
-          });
-        });
-      });
-      */
-    </script>
   </head>
   <body class="bg-slate-100 max-w-[500px] w-full m-auto rounded-md shadow-xl p-4">
-    <!--<h1>Data Entry Form</h1>-->
-    <!--<h2>Search</h2>-->
     <!--<form id="searchForm" class="space-y-4 p-6 bg-gray-100 rounded-lg shadow-md">-->
     <input type="text" id="searchQuery" placeholder="Search..." oninput="searchRows()"
       class="w-full p-2 border border-gray-300 rounded-md" />
@@ -378,7 +356,19 @@
       <textarea id="Caption4" placeholder="Caption4" rows="4" class="w-full p-2 border border-gray-300 rounded-md"></textarea>
     </div>
 
+    <!--  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Article 5  -->
     <div class="row-dark">
+      <div id="article-buttons-5" class="flex gap-2 mt-2">
+          <button onclick="copyFromArticle(5, event)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">
+              Copy
+          </button>
+          <button onclick="cutFromArticle(5, event)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">
+              Cut
+          </button>
+          <button onclick="pasteIntoArticle(5, event)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">
+              Paste
+          </button>
+      </div>
       <input type="text" id="Title5" placeholder="Title5" class="w-full p-2 border border-gray-300 rounded-md" />
       <div class="image-input-wrapper flex items-center gap-2">
         <input
@@ -432,6 +422,17 @@
     </div>
 
     <div class="row-light">
+      <div id="article-buttons-6" class="flex gap-2 mt-2">
+          <button onclick="copyFromArticle(6, event)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">
+              Copy
+          </button>
+          <button onclick="cutFromArticle(6, event)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">
+              Cut
+          </button>
+          <button onclick="pasteIntoArticle(6, event)" class="bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300">
+              Paste
+          </button>
+      </div>
       <input type="text" id="Title6" placeholder="Title6" class="w-full p-2 border border-gray-300 rounded-md" />
       <div class="image-input-wrapper flex items-center gap-2">
         <input
@@ -770,24 +771,37 @@
       </button>
     </div>
 
+    <input type="hidden" id="clipboard" value="" />
+
     </form>
 
+    
     <script>
       function googleScriptCall(functionName, params, callback) {
         google.script.run.withSuccessHandler(callback)[functionName](...params);
       }
 
+
       function addRow() {
-        const data = [
-            document.getElementById("id").value || "ID-" + Date.now(),
-            ...getDataEntryFields()
-        ];
-        googleScriptCall("addRow", [data], (message) => {
-            alert(message);
-            populateForm(data); // Load newly added data into the form
-            searchRows(); // Refresh the search results
-        });
+        const id = document.getElementById("id").value.trim();
+
+        // Only proceed with adding a row if the ID is completely empty
+        if (!id) {
+            const data = [
+                "ID-" + Date.now(),  // Generate a unique ID
+                ...getDataEntryFields()
+            ];
+            googleScriptCall("addRow", [data], (message) => {
+                alert(message);
+                clearForm();  // Clear the form after adding a row
+                searchRows();  // Refresh the search results
+            });
+        } else {
+            alert("Please clear the form before adding a new row.");
+        }
       }
+
+
 
       function editRow() {
         const id = document.getElementById("id").value;
@@ -800,23 +814,6 @@
           searchRows(); // Refresh the search results
         });
       }
-      /*
-      function deleteRow() {
-          const id = document.getElementById("id").value;
-
-          if (id) {
-              googleScriptCall("deleteRow", [id], (message) => {
-                  alert(message);
-
-                  // Clear the form after deletion
-                  clearForm();
-
-                  // Update button states: Only Add button should be visible
-                  updateButtonStates(false);
-              });
-          }
-      }
-      */
       function deleteRow() {
           const id = document.getElementById("id").value;
 
@@ -1033,11 +1030,18 @@
             }
         });
 
-        //setButtonStates(false); // Update button states
-
         isEditing = false; // Reset editing state
+
         // Update button states: Only Add button should be visible
         updateButtonStates(false);
+
+        // Clear ID field to allow adding a new row                 // ChatGPT 01019
+        document.getElementById("id").value = "";
+
+        // Enable the Add button explicitly
+        const addButton = document.getElementById("addButton");
+        addButton.disabled = false;                                 // ChatGPT 01019
+
       }
 
       function getDataEntryFields() {
@@ -1188,28 +1192,27 @@
           const button = document.getElementById(buttonId);
           if (button) button.style.display = 'none';
       }
-  
+
       function updateButtonStates(isFormFilled) {
           if (isEditing) {
-              // Show Save, Delete, and Clear buttons when editing
-              if (isFormFilled) {
-                  showButton('saveButton');
-                  showButton('deleteButton');
-                  showButton('clearButton');
-                  hideButton('addButton');
-              } else {
-                  hideButton('saveButton');
-                  hideButton('deleteButton');
-                  hideButton('clearButton');
-                  showButton('addButton');
-              }
+              showButton('saveButton');
+              showButton('deleteButton');
+              showButton('clearButton');
+              hideButton('addButton');
           } else {
-              // For manual input, only show the Add button
+              hideButton('saveButton');
+              hideButton('deleteButton');
+              showButton('clearButton');
+              showButton('addButton');
+          }
+          
+          if (!isFormFilled) {
               hideButton('saveButton');
               hideButton('deleteButton');
               hideButton('clearButton');
               showButton('addButton');
           }
+
       }
 
       function isFormFilled() {
@@ -1282,6 +1285,174 @@
         }
       }
 
+      // Function to delete an article and shift the remaining articles up
+      function deleteArticle(articleIndex) {
+        for (let i = articleIndex; i < 10; i++) {
+          const nextIndex = i + 1;
+          document.getElementById(`Title${i}`).value = document.getElementById(`Title${nextIndex}`).value;
+          document.getElementById(`Image${i}`).value = document.getElementById(`Image${nextIndex}`).value;
+          document.getElementById(`Video${i}`).value = document.getElementById(`Video${nextIndex}`).value;
+          document.getElementById(`Audio${i}`).value = document.getElementById(`Audio${nextIndex}`).value;
+          document.getElementById(`Caption${i}`).value = document.getElementById(`Caption${nextIndex}`).value;
+        }
+        clearArticle(10);
+      }
+
+      // Function to insert an empty article before a specified index
+      function insertEmptyArticleBefore(articleIndex) {
+        console.log("insert!")
+        for (let i = 10; i > articleIndex; i--) {
+          const prevIndex = i - 1;
+          document.getElementById(`Title${i}`).value = document.getElementById(`Title${prevIndex}`).value;
+          console.log(i)
+          document.getElementById(`Image${i}`).value = document.getElementById(`Image${prevIndex}`).value;
+          document.getElementById(`Video${i}`).value = document.getElementById(`Video${prevIndex}`).value;
+          document.getElementById(`Audio${i}`).value = document.getElementById(`Audio${prevIndex}`).value;
+          document.getElementById(`Caption${i}`).value = document.getElementById(`Caption${prevIndex}`).value;
+        }
+        //clearArticle(articleIndex);
+      }
+
+      // Function to copy an article and insert it before a specified index
+      function copyArticleBefore(articleIndex) {
+        insertEmptyArticleBefore(articleIndex);
+        document.getElementById(`Title${articleIndex}`).value = document.getElementById(`Title${articleIndex + 1}`).value;
+        document.getElementById(`Image${articleIndex}`).value = document.getElementById(`Image${articleIndex + 1}`).value;
+        document.getElementById(`Video${articleIndex}`).value = document.getElementById(`Video${articleIndex + 1}`).value;
+        document.getElementById(`Audio${articleIndex}`).value = document.getElementById(`Audio${articleIndex + 1}`).value;
+        document.getElementById(`Caption${articleIndex}`).value = document.getElementById(`Caption${articleIndex + 1}`).value;
+      }
+
+      // Function to clear an article
+      function clearArticle(articleIndex) {
+        document.getElementById(`Title${articleIndex}`).value = "";
+        document.getElementById(`Image${articleIndex}`).value = "";
+        document.getElementById(`Video${articleIndex}`).value = "";
+        document.getElementById(`Audio${articleIndex}`).value = "";
+        document.getElementById(`Caption${articleIndex}`).value = "";
+      }
+
+      function updateButtonStates(isFormFilled) {
+        const articleButtons5 = document.getElementById('article-buttons-5');
+        const articleButtons6 = document.getElementById('article-buttons-6');
+
+        if (isEditing) {
+          showButton('saveButton');
+          showButton('deleteButton');
+          showButton('clearButton');
+          hideButton('addButton');
+          articleButtons5.classList.remove('hidden'); // Show article buttons when editing
+          articleButtons6.classList.remove('hidden'); // Show article buttons when editing
+        } else {
+          hideButton('saveButton');
+          hideButton('deleteButton');
+          showButton('clearButton');
+          showButton('addButton');
+          articleButtons5.classList.remove('hidden'); // Show article buttons when editing
+          articleButtons6.classList.remove('hidden'); // Show article buttons when editing
+        }
+
+        if (!isFormFilled) {
+          hideButton('saveButton');
+          hideButton('deleteButton');
+          hideButton('clearButton');
+          showButton('addButton');
+          articleButtons5.classList.add('hidden'); // Show article buttons when editing
+          articleButtons6.classList.add('hidden'); // Show article buttons when editing
+        }
+      }
+
+
+      // Copy data from an article to the hidden clipboard field
+      function copyFromArticle(articleIndex, event) {
+          if (event) event.preventDefault(); // Stop the default button action
+
+          // Construct the article data object
+          const articleData = {
+              Title: document.getElementById(`Title${articleIndex}`).value,
+              Image: document.getElementById(`Image${articleIndex}`).value,
+              Video: document.getElementById(`Video${articleIndex}`).value,
+              Audio: document.getElementById(`Audio${articleIndex}`).value,
+              Caption: document.getElementById(`Caption${articleIndex}`).value,
+          };
+
+          // Store the data as a JSON string in the hidden clipboard field
+          document.getElementById("clipboard").value = JSON.stringify(articleData);
+
+          console.log(`Article ${articleIndex} copied to clipboard:`, articleData);
+      }
+
+      // Cut data from an article to the hidden clipboard field (clears original)
+      function cutFromArticle(articleIndex, event) {
+          copyFromArticle(articleIndex); // First, copy the data
+
+          if (event) event.preventDefault(); // Stop the default button action
+
+          // Clear the article fields
+          document.getElementById(`Title${articleIndex}`).value = "";
+          document.getElementById(`Image${articleIndex}`).value = "";
+          document.getElementById(`Video${articleIndex}`).value = "";
+          document.getElementById(`Audio${articleIndex}`).value = "";
+          document.getElementById(`Caption${articleIndex}`).value = "";
+
+          console.log(`Article ${articleIndex} cut (copied and cleared).`);
+      }
+
+      // Paste data from the hidden clipboard field into an article
+      function pasteIntoArticle(articleIndex, event) {
+          if (event) event.preventDefault(); // Stop the default button action
+          const clipboardContent = document.getElementById("clipboard").value;
+
+          if (!clipboardContent) {
+              alert("Clipboard is empty!");
+              return;
+          }
+
+          // Confirmation alert before overwriting
+          const confirmPaste = confirm(`Pasting will overwrite the current data in Article ${articleIndex}. Continue?`);
+          if (!confirmPaste) {
+              return; // User canceled, exit function
+          }
+
+          try {
+              // Parse the clipboard JSON string into an object
+              const articleData = JSON.parse(clipboardContent);
+
+              // Populate the target article's fields
+              document.getElementById(`Title${articleIndex}`).value = articleData.Title || "";
+              document.getElementById(`Image${articleIndex}`).value = articleData.Image || "";
+              document.getElementById(`Video${articleIndex}`).value = articleData.Video || "";
+              document.getElementById(`Audio${articleIndex}`).value = articleData.Audio || "";
+              document.getElementById(`Caption${articleIndex}`).value = articleData.Caption || "";
+
+              console.log(`Clipboard content pasted into Article ${articleIndex}:`, articleData);
+          } catch (error) {
+              console.error("Failed to paste data: Invalid clipboard content.", error);
+              alert("Clipboard content is invalid!");
+          }
+      }
+
+
+      function showNotification(message) {
+            const notification = document.createElement("div");
+            notification.textContent = message;
+            notification.style.position = "fixed";
+            notification.style.bottom = "10px";
+            notification.style.right = "10px";
+            notification.style.backgroundColor = "#333";
+            notification.style.color = "white";
+            notification.style.padding = "10px 15px";
+            notification.style.borderRadius = "5px";
+            notification.style.boxShadow = "0px 0px 5px rgba(0,0,0,0.2)";
+            notification.style.zIndex = "1000";
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000); // Remove after 3 seconds
+        }
+
+
       document.addEventListener("DOMContentLoaded", () => {
         hideButton('saveButton');
         hideButton('deleteButton');
@@ -1307,5 +1478,6 @@
 
    
     </script>
-  </body>
+  
+</body>
 </html>
